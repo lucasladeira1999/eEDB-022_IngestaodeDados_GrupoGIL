@@ -1,0 +1,14 @@
+.env
+**/.terraform/
+**/.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfplan
+hop/audit/
+hop/*.log
+
+# dados brutos originais
+dados/_original.zip
+
+01-etl-visual/*
+!01-etl-visual/README.md
