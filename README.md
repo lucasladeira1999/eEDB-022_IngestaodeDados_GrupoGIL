@@ -5,7 +5,7 @@ Atividades da disciplina, uma pasta por semana. Todas partem das mesmas três ba
 
 | # | Tema | Ferramentas | Status |
 |---|---|---|---|
-| [01](01-etl-visual/) | ETL visual | Apache Hop + Postgres + Terraform | 🚧 em andamento |
+| [01](01-etl-visual/) | ETL visual | Apache Hop + Postgres | 🚧 em andamento |
 | [02](02-etl-python/) | ETL com Python | Pandas + Postgres | ⬜ |
 | [03](03-etl-pyspark/) | ETL com PySpark | Spark + Python | ⬜ |
 | [04](04-sql-dbt/) | Transformações SQL | dbt + DuckDB | ⬜ |

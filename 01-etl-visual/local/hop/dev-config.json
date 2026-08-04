@@ -1,0 +1,10 @@
+{
+  "variables": [
+    { "name": "PG_HOST", "value": "postgres", "description": "" },
+    { "name": "PG_PORT", "value": "5432", "description": "" },
+    { "name": "PG_DB", "value": "glassdoor", "description": "" },
+    { "name": "PG_USER", "value": "etl", "description": "" },
+    { "name": "PG_PASSWORD", "value": "etl", "description": "" },
+    { "name": "FILES_DIR", "value": "/files", "description": "" }
+  ]
+}

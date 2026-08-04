@@ -10,5 +10,5 @@ hop/*.log
 # dados brutos originais
 dados/_original.zip
 
-01-etl-visual/*
-!01-etl-visual/README.md
+01-etl-visual/aws
+
