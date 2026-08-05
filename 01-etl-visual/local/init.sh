@@ -10,8 +10,10 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
 	CREATE DATABASE glassdoor OWNER etl;
 EOSQL
 
-# Camadas: raw = ingestão bruta dos arquivos, trusted = tratado/unificado
+# Camadas: raw = fiel ao arquivo, trusted = limpo e tipado por fonte,
+# delivery = modelo final entregue (join das três fontes)
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname glassdoor <<-EOSQL
-	CREATE SCHEMA raw     AUTHORIZATION etl;
-	CREATE SCHEMA trusted AUTHORIZATION etl;
+	CREATE SCHEMA raw      AUTHORIZATION etl;
+	CREATE SCHEMA trusted  AUTHORIZATION etl;
+	CREATE SCHEMA delivery AUTHORIZATION etl;
 EOSQL

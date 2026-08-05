@@ -1,0 +1,676 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<pipeline>
+  <info>
+    <name>trusted_reclamacoes</name>
+    <name_sync_with_filename>Y</name_sync_with_filename>
+    <description />
+    <extended_description />
+    <pipeline_version />
+    <pipeline_type>Normal</pipeline_type>
+    <parameters />
+    <capture_transform_performance>N</capture_transform_performance>
+    <transform_performance_capturing_delay>1000</transform_performance_capturing_delay>
+    <transform_performance_capturing_size_limit>100</transform_performance_capturing_size_limit>
+    <created_user>-</created_user>
+    <modified_user>-</modified_user>
+    <key_for_session_key />
+    <is_key_private>N</is_key_private>
+  </info>
+  <order>
+    <hop>
+      <from>le_raw_reclamacoes</from>
+      <to>maiusculas</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>maiusculas</from>
+      <to>tira_sufixos</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>tira_sufixos</from>
+      <to>tira_acentos</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>tira_acentos</from>
+      <to>so_alfanumerico</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>so_alfanumerico</from>
+      <to>espaco_unico</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>espaco_unico</from>
+      <to>trim_final</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>trim_final</from>
+      <to>define_tamanhos</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>define_tamanhos</from>
+      <to>limpa_indice</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>limpa_indice</from>
+      <to>converte_numeros</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>converte_numeros</from>
+      <to>grava_trusted_reclamacoes</to>
+      <enabled>Y</enabled>
+    </hop>
+  </order>
+  <transform>
+    <name>le_raw_reclamacoes</name>
+    <type>TableInput</type>
+    <description />
+    <distribute>Y</distribute>
+    <custom_distribution />
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <connection>glassdoor</connection>
+    <sql>SELECT ano, trimestre, categoria, tipo, cnpj_if, instituicao_financeira,
+       indice, qtd_reclamacoes_reguladas_procedentes, qtd_reclamacoes_reguladas_outras, qtd_reclamacoes_nao_reguladas, qtd_total_reclamacoes, qtd_total_clientes_ccs_e_scr, qtd_clientes_ccs, qtd_clientes_scr, origem_arquivo
+  FROM raw.reclamacoes</sql>
+    <limit>0</limit>
+    <lookup />
+    <execute_each_row>N</execute_each_row>
+    <variables_active>N</variables_active>
+    <attributes />
+    <GUI>
+      <xloc>176</xloc>
+      <yloc>160</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>maiusculas</name>
+    <type>StringOperations</type>
+    <description />
+    <distribute>Y</distribute>
+    <custom_distribution />
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <fields>
+      <field>
+        <in_stream_name>instituicao_financeira</in_stream_name>
+        <out_stream_name>nome_norm</out_stream_name>
+        <trim_type>both</trim_type>
+        <lower_upper>upper</lower_upper>
+        <padding_type>none</padding_type>
+        <pad_char />
+        <pad_len />
+        <init_cap>no</init_cap>
+        <mask_xml>none</mask_xml>
+        <digits>none</digits>
+        <remove_special_characters>none</remove_special_characters>
+      </field>
+    </fields>
+    <attributes />
+    <GUI>
+      <xloc>336</xloc>
+      <yloc>160</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>tira_sufixos</name>
+    <type>ReplaceString</type>
+    <description />
+    <distribute>Y</distribute>
+    <custom_distribution />
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <fields>
+      <field>
+        <in_stream_name>nome_norm</in_stream_name>
+        <out_stream_name />
+        <use_regex>yes</use_regex>
+        <replace_string>\(.*?\)| - PRUDENCIAL|\bS/?\.?A\.?\b|\bLTDA\b</replace_string>
+        <replace_by_string> </replace_by_string>
+        <set_empty_string>N</set_empty_string>
+        <replace_field_by_string />
+        <whole_word>no</whole_word>
+        <case_sensitive>no</case_sensitive>
+        <is_unicode>no</is_unicode>
+      </field>
+      <field>
+        <in_stream_name>cnpj_if</in_stream_name>
+        <out_stream_name>cnpj_norm</out_stream_name>
+        <use_regex>yes</use_regex>
+        <replace_string>[^0-9]</replace_string>
+        <replace_by_string />
+        <set_empty_string>N</set_empty_string>
+        <replace_field_by_string />
+        <whole_word>no</whole_word>
+        <case_sensitive>no</case_sensitive>
+        <is_unicode>no</is_unicode>
+      </field>
+    </fields>
+    <attributes />
+    <GUI>
+      <xloc>496</xloc>
+      <yloc>160</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>tira_acentos</name>
+    <type>ReplaceString</type>
+    <description />
+    <distribute>Y</distribute>
+    <custom_distribution />
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <fields>
+      <field>
+        <in_stream_name>nome_norm</in_stream_name>
+        <out_stream_name />
+        <use_regex>yes</use_regex>
+        <replace_string>[ÁÀÂÃÄ]</replace_string>
+        <replace_by_string>A</replace_by_string>
+        <set_empty_string>N</set_empty_string>
+        <replace_field_by_string />
+        <whole_word>no</whole_word>
+        <case_sensitive>no</case_sensitive>
+        <is_unicode>no</is_unicode>
+      </field>
+      <field>
+        <in_stream_name>nome_norm</in_stream_name>
+        <out_stream_name />
+        <use_regex>yes</use_regex>
+        <replace_string>[ÉÈÊË]</replace_string>
+        <replace_by_string>E</replace_by_string>
+        <set_empty_string>N</set_empty_string>
+        <replace_field_by_string />
+        <whole_word>no</whole_word>
+        <case_sensitive>no</case_sensitive>
+        <is_unicode>no</is_unicode>
+      </field>
+      <field>
+        <in_stream_name>nome_norm</in_stream_name>
+        <out_stream_name />
+        <use_regex>yes</use_regex>
+        <replace_string>[ÍÌÎÏ]</replace_string>
+        <replace_by_string>I</replace_by_string>
+        <set_empty_string>N</set_empty_string>
+        <replace_field_by_string />
+        <whole_word>no</whole_word>
+        <case_sensitive>no</case_sensitive>
+        <is_unicode>no</is_unicode>
+      </field>
+      <field>
+        <in_stream_name>nome_norm</in_stream_name>
+        <out_stream_name />
+        <use_regex>yes</use_regex>
+        <replace_string>[ÓÒÔÕÖ]</replace_string>
+        <replace_by_string>O</replace_by_string>
+        <set_empty_string>N</set_empty_string>
+        <replace_field_by_string />
+        <whole_word>no</whole_word>
+        <case_sensitive>no</case_sensitive>
+        <is_unicode>no</is_unicode>
+      </field>
+      <field>
+        <in_stream_name>nome_norm</in_stream_name>
+        <out_stream_name />
+        <use_regex>yes</use_regex>
+        <replace_string>[ÚÙÛÜ]</replace_string>
+        <replace_by_string>U</replace_by_string>
+        <set_empty_string>N</set_empty_string>
+        <replace_field_by_string />
+        <whole_word>no</whole_word>
+        <case_sensitive>no</case_sensitive>
+        <is_unicode>no</is_unicode>
+      </field>
+      <field>
+        <in_stream_name>nome_norm</in_stream_name>
+        <out_stream_name />
+        <use_regex>yes</use_regex>
+        <replace_string>Ç</replace_string>
+        <replace_by_string>C</replace_by_string>
+        <set_empty_string>N</set_empty_string>
+        <replace_field_by_string />
+        <whole_word>no</whole_word>
+        <case_sensitive>no</case_sensitive>
+        <is_unicode>no</is_unicode>
+      </field>
+    </fields>
+    <attributes />
+    <GUI>
+      <xloc>576</xloc>
+      <yloc>160</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>so_alfanumerico</name>
+    <type>ReplaceString</type>
+    <description />
+    <distribute>Y</distribute>
+    <custom_distribution />
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <fields>
+      <field>
+        <in_stream_name>nome_norm</in_stream_name>
+        <out_stream_name />
+        <use_regex>yes</use_regex>
+        <replace_string>[^A-Z0-9 ]</replace_string>
+        <replace_by_string />
+        <set_empty_string>N</set_empty_string>
+        <replace_field_by_string />
+        <whole_word>no</whole_word>
+        <case_sensitive>no</case_sensitive>
+        <is_unicode>no</is_unicode>
+      </field>
+    </fields>
+    <attributes />
+    <GUI>
+      <xloc>656</xloc>
+      <yloc>160</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>espaco_unico</name>
+    <type>ReplaceString</type>
+    <description />
+    <distribute>Y</distribute>
+    <custom_distribution />
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <fields>
+      <field>
+        <in_stream_name>nome_norm</in_stream_name>
+        <out_stream_name />
+        <use_regex>yes</use_regex>
+        <replace_string> +</replace_string>
+        <replace_by_string> </replace_by_string>
+        <set_empty_string>N</set_empty_string>
+        <replace_field_by_string />
+        <whole_word>no</whole_word>
+        <case_sensitive>no</case_sensitive>
+        <is_unicode>no</is_unicode>
+      </field>
+      <field>
+        <in_stream_name>cnpj_norm</in_stream_name>
+        <out_stream_name />
+        <use_regex>yes</use_regex>
+        <replace_string>^0+</replace_string>
+        <replace_by_string />
+        <set_empty_string>N</set_empty_string>
+        <replace_field_by_string />
+        <whole_word>no</whole_word>
+        <case_sensitive>no</case_sensitive>
+        <is_unicode>no</is_unicode>
+      </field>
+    </fields>
+    <attributes />
+    <GUI>
+      <xloc>816</xloc>
+      <yloc>160</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>trim_final</name>
+    <type>StringOperations</type>
+    <description />
+    <distribute>Y</distribute>
+    <custom_distribution />
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <fields>
+      <field>
+        <in_stream_name>nome_norm</in_stream_name>
+        <out_stream_name />
+        <trim_type>both</trim_type>
+        <lower_upper>none</lower_upper>
+        <padding_type>none</padding_type>
+        <pad_char />
+        <pad_len />
+        <init_cap>no</init_cap>
+        <mask_xml>none</mask_xml>
+        <digits>none</digits>
+        <remove_special_characters>none</remove_special_characters>
+      </field>
+    </fields>
+    <attributes />
+    <GUI>
+      <xloc>976</xloc>
+      <yloc>160</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>define_tamanhos</name>
+    <type>SelectValues</type>
+    <description />
+    <distribute>Y</distribute>
+    <custom_distribution />
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <fields>
+      <select_unspecified>N</select_unspecified>
+      <meta>
+        <name>nome_norm</name>
+        <rename>nome_norm</rename>
+        <type>String</type>
+        <length>255</length>
+        <precision>0</precision>
+        <conversion_mask />
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale />
+        <date_format_timezone />
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding />
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol />
+        <currency_symbol />
+        <storage_type>normal</storage_type>
+      </meta>
+      <meta>
+        <name>cnpj_norm</name>
+        <rename>cnpj_norm</rename>
+        <type>String</type>
+        <length>20</length>
+        <precision>0</precision>
+        <conversion_mask />
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale />
+        <date_format_timezone />
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding />
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol />
+        <currency_symbol />
+        <storage_type>normal</storage_type>
+      </meta>
+    </fields>
+    <attributes />
+    <GUI>
+      <xloc>1136</xloc>
+      <yloc>160</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>limpa_indice</name>
+    <type>ReplaceString</type>
+    <description />
+    <distribute>Y</distribute>
+    <custom_distribution />
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <fields>
+      <field>
+        <in_stream_name>indice</in_stream_name>
+        <out_stream_name />
+        <use_regex>yes</use_regex>
+        <replace_string>\s</replace_string>
+        <replace_by_string />
+        <set_empty_string>N</set_empty_string>
+        <replace_field_by_string />
+        <whole_word>no</whole_word>
+        <case_sensitive>no</case_sensitive>
+        <is_unicode>no</is_unicode>
+      </field>
+      <field>
+        <in_stream_name>indice</in_stream_name>
+        <out_stream_name />
+        <use_regex>yes</use_regex>
+        <replace_string>\.</replace_string>
+        <replace_by_string />
+        <set_empty_string>N</set_empty_string>
+        <replace_field_by_string />
+        <whole_word>no</whole_word>
+        <case_sensitive>no</case_sensitive>
+        <is_unicode>no</is_unicode>
+      </field>
+      <field>
+        <in_stream_name>indice</in_stream_name>
+        <out_stream_name />
+        <use_regex>yes</use_regex>
+        <replace_string>,</replace_string>
+        <replace_by_string>.</replace_by_string>
+        <set_empty_string>N</set_empty_string>
+        <replace_field_by_string />
+        <whole_word>no</whole_word>
+        <case_sensitive>no</case_sensitive>
+        <is_unicode>no</is_unicode>
+      </field>
+    </fields>
+    <attributes />
+    <GUI>
+      <xloc>1136</xloc>
+      <yloc>160</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>converte_numeros</name>
+    <type>SelectValues</type>
+    <description />
+    <distribute>Y</distribute>
+    <custom_distribution />
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <fields>
+      <select_unspecified>N</select_unspecified>
+      <meta>
+        <name>indice</name>
+        <rename>indice</rename>
+        <type>Number</type>
+        <length>9</length>
+        <precision>2</precision>
+        <conversion_mask>#.#</conversion_mask>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale />
+        <date_format_timezone />
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding />
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol />
+        <currency_symbol />
+        <storage_type>normal</storage_type>
+      </meta>
+      <meta>
+        <name>qtd_reclamacoes_reguladas_procedentes</name>
+        <rename>qtd_reclamacoes_reguladas_procedentes</rename>
+        <type>Integer</type>
+        <length>12</length>
+        <precision>0</precision>
+        <conversion_mask>#</conversion_mask>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale />
+        <date_format_timezone />
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding />
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol />
+        <currency_symbol />
+        <storage_type>normal</storage_type>
+      </meta>
+      <meta>
+        <name>qtd_reclamacoes_reguladas_outras</name>
+        <rename>qtd_reclamacoes_reguladas_outras</rename>
+        <type>Integer</type>
+        <length>12</length>
+        <precision>0</precision>
+        <conversion_mask>#</conversion_mask>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale />
+        <date_format_timezone />
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding />
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol />
+        <currency_symbol />
+        <storage_type>normal</storage_type>
+      </meta>
+      <meta>
+        <name>qtd_reclamacoes_nao_reguladas</name>
+        <rename>qtd_reclamacoes_nao_reguladas</rename>
+        <type>Integer</type>
+        <length>12</length>
+        <precision>0</precision>
+        <conversion_mask>#</conversion_mask>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale />
+        <date_format_timezone />
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding />
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol />
+        <currency_symbol />
+        <storage_type>normal</storage_type>
+      </meta>
+      <meta>
+        <name>qtd_total_reclamacoes</name>
+        <rename>qtd_total_reclamacoes</rename>
+        <type>Integer</type>
+        <length>12</length>
+        <precision>0</precision>
+        <conversion_mask>#</conversion_mask>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale />
+        <date_format_timezone />
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding />
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol />
+        <currency_symbol />
+        <storage_type>normal</storage_type>
+      </meta>
+      <meta>
+        <name>qtd_total_clientes_ccs_e_scr</name>
+        <rename>qtd_total_clientes_ccs_e_scr</rename>
+        <type>Integer</type>
+        <length>12</length>
+        <precision>0</precision>
+        <conversion_mask>#</conversion_mask>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale />
+        <date_format_timezone />
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding />
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol />
+        <currency_symbol />
+        <storage_type>normal</storage_type>
+      </meta>
+      <meta>
+        <name>qtd_clientes_ccs</name>
+        <rename>qtd_clientes_ccs</rename>
+        <type>Integer</type>
+        <length>12</length>
+        <precision>0</precision>
+        <conversion_mask>#</conversion_mask>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale />
+        <date_format_timezone />
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding />
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol />
+        <currency_symbol />
+        <storage_type>normal</storage_type>
+      </meta>
+      <meta>
+        <name>qtd_clientes_scr</name>
+        <rename>qtd_clientes_scr</rename>
+        <type>Integer</type>
+        <length>12</length>
+        <precision>0</precision>
+        <conversion_mask>#</conversion_mask>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale />
+        <date_format_timezone />
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding />
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol />
+        <currency_symbol />
+        <storage_type>normal</storage_type>
+      </meta>
+    </fields>
+    <attributes />
+    <GUI>
+      <xloc>1296</xloc>
+      <yloc>160</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>grava_trusted_reclamacoes</name>
+    <type>TableOutput</type>
+    <description />
+    <distribute>Y</distribute>
+    <custom_distribution />
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name />
+    </partitioning>
+    <connection>glassdoor</connection>
+    <schema>trusted</schema>
+    <table>reclamacoes</table>
+    <commit>1000</commit>
+    <truncate>Y</truncate>
+    <only_when_have_rows>N</only_when_have_rows>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field />
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field />
+    <tablename_in_table>Y</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field />
+    <specify_fields>N</specify_fields>
+    <auto_update_table_structure>N</auto_update_table_structure>
+    <always_drop_and_recreate>N</always_drop_and_recreate>
+    <add_columns>N</add_columns>
+    <drop_columns>N</drop_columns>
+    <change_column_types>N</change_column_types>
+    <fields />
+    <attributes />
+    <GUI>
+      <xloc>1456</xloc>
+      <yloc>160</yloc>
+    </GUI>
+  </transform>
+  <transform_error_handling />
+  <attributes />
+</pipeline>

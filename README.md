@@ -20,7 +20,7 @@ Atividades da disciplina, uma pasta por semana. Todas partem das mesmas três ba
 |---|---|---|
 | Bancos | `dados/Bancos/` | TSV, UTF-8 |
 | Empregados (Glassdoor) | `dados/Empregados/` | CSV separado por `\|`, UTF-8 |
-| Reclamações (BACEN) | `dados/Reclamações/` | CSV separado por `;`, **ISO-8859-1** |
+| Reclamações (BACEN) | `dados/Reclamacoes/` | CSV separado por `;`, **ISO-8859-1** |
 
 Cada atividade referencia `../../dados` — a base é versionada uma vez só.
 

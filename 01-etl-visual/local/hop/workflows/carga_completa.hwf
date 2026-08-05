@@ -1,0 +1,281 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow>
+  <name>carga_completa</name>
+  <name_sync_with_filename>Y</name_sync_with_filename>
+  <description>Executa os 7 pipelines na ordem: raw -&gt; trusted -&gt; delivery</description>
+  <extended_description />
+  <workflow_version />
+  <created_user>-</created_user>
+  <modified_user>-</modified_user>
+  <parameters />
+  <actions>
+    <action>
+      <name>Start</name>
+      <description />
+      <type>SPECIAL</type>
+      <attributes />
+      <DayOfMonth>1</DayOfMonth>
+      <doNotWaitOnFirstExecution>N</doNotWaitOnFirstExecution>
+      <hour>12</hour>
+      <intervalMinutes>60</intervalMinutes>
+      <intervalSeconds>0</intervalSeconds>
+      <minutes>0</minutes>
+      <repeat>N</repeat>
+      <schedulerType>0</schedulerType>
+      <weekDay>1</weekDay>
+      <parallel>N</parallel>
+      <xloc>80</xloc>
+      <yloc>96</yloc>
+      <attributes_hac />
+    </action>
+    <action>
+      <name>raw_bancos</name>
+      <description />
+      <type>PIPELINE</type>
+      <attributes />
+      <filename>${PROJECT_HOME}/pipelines/raw_bancos.hpl</filename>
+      <params_from_previous>N</params_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>N</clear_rows>
+      <clear_files>N</clear_files>
+      <set_logfile>N</set_logfile>
+      <logfile />
+      <logext />
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Basic</loglevel>
+      <set_append_logfile>N</set_append_logfile>
+      <wait_until_finished>Y</wait_until_finished>
+      <create_parent_folder>N</create_parent_folder>
+      <run_configuration>local</run_configuration>
+      <parameters>
+        <pass_all_parameters>Y</pass_all_parameters>
+      </parameters>
+      <parallel>N</parallel>
+      <xloc>240</xloc>
+      <yloc>96</yloc>
+      <attributes_hac />
+    </action>
+    <action>
+      <name>raw_empregados</name>
+      <description />
+      <type>PIPELINE</type>
+      <attributes />
+      <filename>${PROJECT_HOME}/pipelines/raw_empregados.hpl</filename>
+      <params_from_previous>N</params_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>N</clear_rows>
+      <clear_files>N</clear_files>
+      <set_logfile>N</set_logfile>
+      <logfile />
+      <logext />
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Basic</loglevel>
+      <set_append_logfile>N</set_append_logfile>
+      <wait_until_finished>Y</wait_until_finished>
+      <create_parent_folder>N</create_parent_folder>
+      <run_configuration>local</run_configuration>
+      <parameters>
+        <pass_all_parameters>Y</pass_all_parameters>
+      </parameters>
+      <parallel>N</parallel>
+      <xloc>440</xloc>
+      <yloc>96</yloc>
+      <attributes_hac />
+    </action>
+    <action>
+      <name>raw_reclamacoes</name>
+      <description />
+      <type>PIPELINE</type>
+      <attributes />
+      <filename>${PROJECT_HOME}/pipelines/raw_reclamacoes.hpl</filename>
+      <params_from_previous>N</params_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>N</clear_rows>
+      <clear_files>N</clear_files>
+      <set_logfile>N</set_logfile>
+      <logfile />
+      <logext />
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Basic</loglevel>
+      <set_append_logfile>N</set_append_logfile>
+      <wait_until_finished>Y</wait_until_finished>
+      <create_parent_folder>N</create_parent_folder>
+      <run_configuration>local</run_configuration>
+      <parameters>
+        <pass_all_parameters>Y</pass_all_parameters>
+      </parameters>
+      <parallel>N</parallel>
+      <xloc>640</xloc>
+      <yloc>96</yloc>
+      <attributes_hac />
+    </action>
+    <action>
+      <name>trusted_bancos</name>
+      <description />
+      <type>PIPELINE</type>
+      <attributes />
+      <filename>${PROJECT_HOME}/pipelines/trusted_bancos.hpl</filename>
+      <params_from_previous>N</params_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>N</clear_rows>
+      <clear_files>N</clear_files>
+      <set_logfile>N</set_logfile>
+      <logfile />
+      <logext />
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Basic</loglevel>
+      <set_append_logfile>N</set_append_logfile>
+      <wait_until_finished>Y</wait_until_finished>
+      <create_parent_folder>N</create_parent_folder>
+      <run_configuration>local</run_configuration>
+      <parameters>
+        <pass_all_parameters>Y</pass_all_parameters>
+      </parameters>
+      <parallel>N</parallel>
+      <xloc>840</xloc>
+      <yloc>96</yloc>
+      <attributes_hac />
+    </action>
+    <action>
+      <name>trusted_empregados</name>
+      <description />
+      <type>PIPELINE</type>
+      <attributes />
+      <filename>${PROJECT_HOME}/pipelines/trusted_empregados.hpl</filename>
+      <params_from_previous>N</params_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>N</clear_rows>
+      <clear_files>N</clear_files>
+      <set_logfile>N</set_logfile>
+      <logfile />
+      <logext />
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Basic</loglevel>
+      <set_append_logfile>N</set_append_logfile>
+      <wait_until_finished>Y</wait_until_finished>
+      <create_parent_folder>N</create_parent_folder>
+      <run_configuration>local</run_configuration>
+      <parameters>
+        <pass_all_parameters>Y</pass_all_parameters>
+      </parameters>
+      <parallel>N</parallel>
+      <xloc>240</xloc>
+      <yloc>256</yloc>
+      <attributes_hac />
+    </action>
+    <action>
+      <name>trusted_reclamacoes</name>
+      <description />
+      <type>PIPELINE</type>
+      <attributes />
+      <filename>${PROJECT_HOME}/pipelines/trusted_reclamacoes.hpl</filename>
+      <params_from_previous>N</params_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>N</clear_rows>
+      <clear_files>N</clear_files>
+      <set_logfile>N</set_logfile>
+      <logfile />
+      <logext />
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Basic</loglevel>
+      <set_append_logfile>N</set_append_logfile>
+      <wait_until_finished>Y</wait_until_finished>
+      <create_parent_folder>N</create_parent_folder>
+      <run_configuration>local</run_configuration>
+      <parameters>
+        <pass_all_parameters>Y</pass_all_parameters>
+      </parameters>
+      <parallel>N</parallel>
+      <xloc>440</xloc>
+      <yloc>256</yloc>
+      <attributes_hac />
+    </action>
+    <action>
+      <name>delivery_banco_final</name>
+      <description />
+      <type>PIPELINE</type>
+      <attributes />
+      <filename>${PROJECT_HOME}/pipelines/delivery_banco_final.hpl</filename>
+      <params_from_previous>N</params_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>N</clear_rows>
+      <clear_files>N</clear_files>
+      <set_logfile>N</set_logfile>
+      <logfile />
+      <logext />
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Basic</loglevel>
+      <set_append_logfile>N</set_append_logfile>
+      <wait_until_finished>Y</wait_until_finished>
+      <create_parent_folder>N</create_parent_folder>
+      <run_configuration>local</run_configuration>
+      <parameters>
+        <pass_all_parameters>Y</pass_all_parameters>
+      </parameters>
+      <parallel>N</parallel>
+      <xloc>640</xloc>
+      <yloc>256</yloc>
+      <attributes_hac />
+    </action>
+  </actions>
+  <hops>
+    <hop>
+      <from>Start</from>
+      <to>raw_bancos</to>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>raw_bancos</from>
+      <to>raw_empregados</to>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>raw_empregados</from>
+      <to>raw_reclamacoes</to>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>raw_reclamacoes</from>
+      <to>trusted_bancos</to>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>trusted_bancos</from>
+      <to>trusted_empregados</to>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>trusted_empregados</from>
+      <to>trusted_reclamacoes</to>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>trusted_reclamacoes</from>
+      <to>delivery_banco_final</to>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+  </hops>
+  <notepads />
+  <attributes />
+</workflow>
