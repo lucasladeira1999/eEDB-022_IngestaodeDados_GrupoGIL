@@ -1,16 +1,19 @@
 import os
 
-import yaml
 from to_raw.job import ToRawJob
+from utils import load_config, setup_logger
 
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), "config.yaml")
 
+logger = setup_logger()
+
 
 def main():
-    with open(CONFIG_PATH, "r") as config_file:
-        config = yaml.safe_load(config_file)
+    config = load_config(CONFIG_PATH)
 
-    ToRawJob.run(config["dados_path"], config["raw_bucket"])
+    logger.info(f"Loaded config: {config}")
+
+    ToRawJob.run(**config)
 
 
 if __name__ == "__main__":
