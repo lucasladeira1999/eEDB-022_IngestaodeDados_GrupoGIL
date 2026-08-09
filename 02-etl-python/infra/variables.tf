@@ -3,14 +3,9 @@ variable "buckets_to_create" {
   description = "name of buckets to create"
 }
 
-variable "redshift_namespace_name" {
+variable "redshift_cluster_identifier" {
   type        = string
-  description = "name of the Redshift Serverless namespace"
-}
-
-variable "redshift_workgroup_name" {
-  type        = string
-  description = "name of the Redshift Serverless workgroup"
+  description = "identifier of the Redshift cluster"
 }
 
 variable "redshift_database_name" {
@@ -20,16 +15,11 @@ variable "redshift_database_name" {
 
 variable "redshift_admin_username" {
   type        = string
-  description = "admin username for the Redshift namespace"
+  description = "admin username for the Redshift cluster"
 }
 
 variable "redshift_admin_password" {
   type        = string
-  description = "admin password for the Redshift namespace"
+  description = "admin password for the Redshift cluster"
   sensitive   = true
-}
-
-variable "redshift_base_capacity" {
-  type        = number
-  description = "base RPU capacity for the Redshift workgroup"
 }

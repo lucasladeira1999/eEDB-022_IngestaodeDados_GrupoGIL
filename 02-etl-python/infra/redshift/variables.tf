@@ -1,11 +1,6 @@
-variable "namespace_name" {
+variable "cluster_identifier" {
   type        = string
-  description = "name of the Redshift Serverless namespace"
-}
-
-variable "workgroup_name" {
-  type        = string
-  description = "name of the Redshift Serverless workgroup"
+  description = "identifier of the Redshift cluster"
 }
 
 variable "database_name" {
@@ -16,18 +11,12 @@ variable "database_name" {
 
 variable "admin_username" {
   type        = string
-  description = "admin username for the namespace"
+  description = "admin username for the cluster"
   default     = "admin"
 }
 
 variable "admin_password" {
   type        = string
-  description = "admin password for the namespace"
+  description = "admin password for the cluster"
   sensitive   = true
-}
-
-variable "base_capacity" {
-  type        = number
-  description = "base RPU capacity for the workgroup"
-  default     = 8
 }

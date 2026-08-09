@@ -11,11 +11,9 @@ module "create-s3-bucket-with-prefix" {
 module "redshift" {
   source = "./redshift"
 
-  namespace_name = var.redshift_namespace_name
-  workgroup_name = var.redshift_workgroup_name
-  database_name  = var.redshift_database_name
-  admin_username = var.redshift_admin_username
-  admin_password = var.redshift_admin_password
-  base_capacity  = var.redshift_base_capacity
+  cluster_identifier = var.redshift_cluster_identifier
+  database_name      = var.redshift_database_name
+  admin_username     = var.redshift_admin_username
+  admin_password     = var.redshift_admin_password
 }
 
