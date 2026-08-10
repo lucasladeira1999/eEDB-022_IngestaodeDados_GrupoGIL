@@ -8,12 +8,14 @@ logger = logging.getLogger()
 
 class ToRawJob:
     def run(**config) -> None:
+        logger.info(f"Running ToRawJob with config: {config}")
         s3_client = boto3.client("s3")
-
-        for root, _, files in os.walk(config["dados_path"]):
+        dados_folder = config["dados_path"]
+        logger.info(f"Files found in {dados_folder}: {os.listdir(dados_folder)}")
+        for root, _, files in os.walk(dados_folder):
             for file_name in files:
                 file_path = os.path.join(root, file_name)
-                relative_path = os.path.relpath(file_path, config["dados_path"])
+                relative_path = os.path.relpath(file_path, dados_folder)
                 key = relative_path.replace(os.sep, "/")
 
                 with open(file_path, "rb") as file_data:
