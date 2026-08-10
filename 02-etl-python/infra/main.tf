@@ -16,3 +16,7 @@ module "redshift" {
   admin_username     = var.redshift_admin_username
   admin_password     = var.redshift_admin_password
 }
+
+output "redshift_iam_role_arn" {
+  value = module.redshift.redshift_iam_role_arn
+}

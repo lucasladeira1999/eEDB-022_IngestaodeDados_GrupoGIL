@@ -2,6 +2,10 @@ data "aws_vpc" "default" {
   default = true
 }
 
+data "aws_iam_role" "lab" {
+  name = "LabRole"
+}
+
 resource "aws_security_group" "redshift" {
   name        = "${var.cluster_identifier}-redshift"
   description = "Allow inbound Redshift access from trusted IPs"
@@ -33,4 +37,9 @@ resource "aws_redshift_cluster" "this" {
   publicly_accessible    = true
   skip_final_snapshot    = true
   vpc_security_group_ids = [aws_security_group.redshift.id]
+  iam_roles               = [data.aws_iam_role.lab.arn]
+}
+
+output "redshift_iam_role_arn" {
+  value = data.aws_iam_role.lab.arn
 }

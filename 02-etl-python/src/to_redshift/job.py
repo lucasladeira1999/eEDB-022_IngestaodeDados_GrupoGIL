@@ -59,8 +59,14 @@ class ToRedshiftJob:
                     logger.info(f"Ensuring table exists: {create_table_sql}")
                     cursor.execute(create_table_sql)
 
+                    copy_sql = (
+                        f'COPY "{table_name}" '
+                        f"FROM 's3://{delivery_bucket}/{key}' "
+                        f"IAM_ROLE '{config['redshift_iam_role']}' "
+                        "FORMAT AS PARQUET"
+                    )
                     logger.info(f"Inserting {len(df)} records into {table_name}")
-                    cursor.write_dataframe(df, table_name)
+                    cursor.execute(copy_sql)
         finally:
             cursor.close()
             conn.close()
