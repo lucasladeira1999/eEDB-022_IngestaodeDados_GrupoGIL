@@ -6,4 +6,4 @@ redshift_host: "eedb-022-grupo03.ct3ja6yhrepn.us-east-1.redshift.amazonaws.com"
 redshift_port: 5439
 redshift_database: "dev"
 redshift_user: "admin"
-redshift_password: "Admin123"
+redshift_password: "Admin1234"
