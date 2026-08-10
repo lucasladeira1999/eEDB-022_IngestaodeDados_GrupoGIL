@@ -12,3 +12,12 @@ dados/_original.zip
 
 01-etl-visual/aws
 
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# config local
+02-etl-python/src/config.yaml

@@ -1,0 +1,12 @@
+dados_path: "dados/"
+raw_bucket: "eedb-022-2026-grupo03-raw"
+trusted_bucket: "eedb-022-2026-grupo03-trusted"
+delivery_bucket: "eedb-022-2026-grupo03-delivery"
+redshift_port: 5439
+redshift_database: "dev"
+redshift_user: "admin"
+redshift_password: "Admin1234"
+# Busque o endpoint conforme explicado no readme
+redshift_host: "eedb-022-grupo03.<endpoint-atual-do-cluster>.us-east-1.redshift.amazonaws.com"
+# ARN da LabRole da SUA conta AWS Academy (roda `terraform output redshift_iam_role_arn` em infra/ pra pegar)
+redshift_iam_role: "arn:aws:iam::<sua-conta>:role/LabRole"
