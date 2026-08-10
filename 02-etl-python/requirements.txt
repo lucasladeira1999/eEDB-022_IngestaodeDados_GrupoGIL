@@ -4,3 +4,5 @@ boto3
 pyyaml==6.0.3
 pyarrow
 redshift_connector
+rapidfuzz
+psycopg2-binary

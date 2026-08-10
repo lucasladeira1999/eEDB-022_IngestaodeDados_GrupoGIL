@@ -1,7 +1,7 @@
-from utils import setup_logger
 from to_trusted.etl.bancos import BancosETL
 from to_trusted.etl.empregados import EmpregadosETL
 from to_trusted.etl.reclamacoes import ReclamacoesETL
+from utils import setup_logger
 
 ETL_JOBS = [BancosETL, EmpregadosETL, ReclamacoesETL]
 logger = setup_logger()

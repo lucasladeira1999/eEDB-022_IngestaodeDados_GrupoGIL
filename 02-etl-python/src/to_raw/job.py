@@ -1,5 +1,7 @@
 import os
+
 import boto3
+
 from utils import setup_logger
 
 logger = setup_logger()

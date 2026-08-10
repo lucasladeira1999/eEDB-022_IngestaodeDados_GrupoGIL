@@ -1,6 +1,7 @@
 import boto3
 import pandas as pd
 import redshift_connector
+
 from utils import setup_logger
 
 logger = setup_logger()

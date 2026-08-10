@@ -2,6 +2,7 @@ from abc import ABC
 
 import boto3
 import pandas as pd
+
 from utils import setup_logger
 
 logger = setup_logger()
