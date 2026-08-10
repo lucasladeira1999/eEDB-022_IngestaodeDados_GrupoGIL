@@ -16,4 +16,3 @@ module "redshift" {
   admin_username     = var.redshift_admin_username
   admin_password     = var.redshift_admin_password
 }
-

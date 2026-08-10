@@ -47,4 +47,3 @@ python src/main.py
 ```
 
 Isso envia todos os arquivos da pasta `dados_path` para o bucket S3 configurado, mantendo a mesma estrutura de pastas.
-
