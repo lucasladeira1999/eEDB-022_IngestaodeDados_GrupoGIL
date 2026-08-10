@@ -1,5 +1,3 @@
-import os
-
 import boto3
 import pandas as pd
 import redshift_connector
@@ -36,8 +34,8 @@ class ToRedshiftJob:
             host=config["redshift_host"],
             port=config.get("redshift_port", 5439),
             database=config["redshift_database"],
-            user=os.environ["REDSHIFT_USER"],
-            password=os.environ["REDSHIFT_PASSWORD"],
+            user=config["redshift_user"],
+            password=config["redshift_password"],
         )
         conn.autocommit = True
         cursor = conn.cursor()
