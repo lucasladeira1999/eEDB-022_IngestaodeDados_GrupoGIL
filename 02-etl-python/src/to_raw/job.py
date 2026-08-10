@@ -1,9 +1,8 @@
 import os
 import boto3
-import logging
+from utils import setup_logger
 
-
-logger = logging.getLogger()
+logger = setup_logger()
 
 
 class ToRawJob:
