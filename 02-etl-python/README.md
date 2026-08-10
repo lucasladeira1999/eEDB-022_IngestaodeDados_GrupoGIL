@@ -60,7 +60,7 @@ aws redshift describe-clusters \
   --query 'Clusters[0].Endpoint.Address' \
   --output text
 ```
-> Exemplo de saída: 
+> Exemplo de saída:
 ```
 eedb-022-grupo03.ct3ja6yhrepn.us-east-1.redshift.amazonaws.com
 ```

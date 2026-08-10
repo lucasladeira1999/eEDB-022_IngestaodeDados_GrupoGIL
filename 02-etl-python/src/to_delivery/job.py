@@ -15,9 +15,7 @@ class ToDeliveryJob:
         for page in paginator.paginate(Bucket=trusted_bucket):
             for obj in page.get("Contents", []):
                 key = obj["Key"]
-                logger.info(
-                    f"Copying {key} from {trusted_bucket} to {delivery_bucket}"
-                )
+                logger.info(f"Copying {key} from {trusted_bucket} to {delivery_bucket}")
                 s3_client.copy_object(
                     Bucket=delivery_bucket,
                     Key=key,

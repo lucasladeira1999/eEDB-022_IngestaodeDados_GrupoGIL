@@ -20,9 +20,10 @@ def build_create_table_sql(table_name: str, df: pd.DataFrame) -> str:
         f'"{col}" {DTYPE_TO_REDSHIFT.get(str(dtype), "VARCHAR(65535)")}'
         for col, dtype in df.dtypes.items()
     )
-    create_sql =  f'CREATE TABLE IF NOT EXISTS "{table_name}" ({columns})'
+    create_sql = f'CREATE TABLE IF NOT EXISTS "{table_name}" ({columns})'
     print(f"Generated CREATE TABLE SQL: {create_sql}")
     return create_sql
+
 
 class ToRedshiftJob:
     def run(**config) -> None:
