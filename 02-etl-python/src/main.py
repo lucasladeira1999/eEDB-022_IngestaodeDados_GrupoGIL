@@ -2,6 +2,7 @@ import os
 
 from to_delivery.job import ToDeliveryJob
 from to_raw.job import ToRawJob
+from to_redshift.job import ToRedshiftJob
 from to_trusted.job import ToTrustedJob
 from utils import load_config, setup_logger
 
@@ -17,9 +18,10 @@ def main():
 
     logger.info(f"Loaded config: {config}")
 
-    # ToRawJob.run(**config)
-    # ToTrustedJob.run(**config)
+    ToRawJob.run(**config)
+    ToTrustedJob.run(**config)
     ToDeliveryJob.run(**config)
+    ToRedshiftJob.run(**config)
 
 
 if __name__ == "__main__":

@@ -2,3 +2,6 @@ dados_path: "dados/"
 raw_bucket: "eedb-022-2026-grupo03-raw"
 trusted_bucket: "eedb-022-2026-grupo03-trusted"
 delivery_bucket: "eedb-022-2026-grupo03-delivery"
+redshift_host: "<redshift-cluster-endpoint>"
+redshift_port: 5439
+redshift_database: "dev"
