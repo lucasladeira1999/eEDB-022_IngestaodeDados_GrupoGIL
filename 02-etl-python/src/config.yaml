@@ -1,3 +1,4 @@
 dados_path: "dados/"
 raw_bucket: "eedb-022-2026-grupo03-raw"
 trusted_bucket: "eedb-022-2026-grupo03-trusted"
+delivery_bucket: "eedb-022-2026-grupo03-delivery"
