@@ -5,6 +5,6 @@ resource "aws_redshift_cluster" "this" {
   master_password     = var.admin_password
   node_type           = "ra3.large"
   cluster_type        = "single-node"
-  publicly_accessible = false
+  publicly_accessible = true
   skip_final_snapshot = true
 }

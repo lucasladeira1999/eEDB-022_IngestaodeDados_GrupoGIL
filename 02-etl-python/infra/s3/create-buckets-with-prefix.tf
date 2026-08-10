@@ -3,7 +3,6 @@ resource "aws_s3_bucket" "my_bucket" {
   force_destroy = true
 }
 
-# Block Public Access (Security Best Practice)
 resource "aws_s3_bucket_public_access_block" "public_block" {
   bucket = aws_s3_bucket.my_bucket.id
 
