@@ -9,6 +9,7 @@ class EmpregadosETL(BaseETL):
     prefix = "Empregados/"
     extension = ".csv"
     sep = "|"
+    encoding = "utf-8"
 
     RATING_COLS = [
         "Geral",

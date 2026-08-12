@@ -9,6 +9,7 @@ class BancosETL(BaseETL):
     prefix = "Bancos/"
     extension = ".tsv"
     sep = "\t"
+    encoding = "utf-8"
 
     def clean_data(self, df: pd.DataFrame) -> pd.DataFrame:
         df = df.copy()

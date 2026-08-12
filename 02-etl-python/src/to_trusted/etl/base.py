@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 import boto3
 import pandas as pd
@@ -57,10 +57,9 @@ class BaseETL(ABC):
         logger.info(f"Data loaded for {self.name} with {len(df)} records")
         return df
 
+    @abstractmethod
     def clean_data(self, df: pd.DataFrame) -> pd.DataFrame:
-        logger.info(f"Cleaning data for {self.name}")
-        # TODO: Implement cleaning logic specific to each ETL job
-        return df
+        raise NotImplementedError
 
     def save_to_bucket(self, trusted_bucket: str, df: pd.DataFrame) -> None:
         logger.info(
