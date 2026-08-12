@@ -3,6 +3,18 @@ from rapidfuzz import fuzz, process
 
 from to_delivery.acronyms import resolve_acronym
 
+RATING_COLS = [
+    "Geral",
+    "Cultura e valores",
+    "Diversidade e inclusão",
+    "Qualidade de vida",
+    "Alta liderança",
+    "Remuneração e benefícios",
+    "Oportunidades de carreira",
+    "Recomendam para outras pessoas(%)",
+    "Perspectiva positiva da empresa(%)",
+]
+
 
 def aggregate_reclamacoes(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
@@ -14,6 +26,8 @@ def aggregate_reclamacoes(df: pd.DataFrame) -> pd.DataFrame:
             total_reclamacoes=("Quantidade total de reclamações", "sum"),
             media_indice=("indice", "mean"),
             trimestres=("Trimestre", "nunique"),
+            total_clientes=("Quantidade total de clientes \x96 CCS e SCR", "sum"),
+            total_procedentes=("Quantidade de reclamações reguladas procedentes", "sum"),
         )
         .reset_index()
     )
@@ -26,12 +40,30 @@ def aggregate_reclamacoes(df: pd.DataFrame) -> pd.DataFrame:
             total_reclamacoes=("Quantidade total de reclamações", "sum"),
             media_indice=("indice", "mean"),
             trimestres=("Trimestre", "nunique"),
+            total_clientes=("Quantidade total de clientes \x96 CCS e SCR", "sum"),
+            total_procedentes=("Quantidade de reclamações reguladas procedentes", "sum"),
         )
         .reset_index()
     )
     by_nome["join_key"] = by_nome["nome_norm"]
     by_nome["join_type"] = "nome"
-    return pd.concat([by_cnpj, by_nome], ignore_index=True)
+    result = pd.concat([by_cnpj, by_nome], ignore_index=True)
+    result["taxa_reclamacao_por_cliente"] = (
+        result["total_reclamacoes"] / result["total_clientes"].replace(0, pd.NA)
+    )
+    result["pct_reclamacoes_procedentes"] = (
+        result["total_procedentes"] / result["total_reclamacoes"].replace(0, pd.NA)
+    )
+    return result
+
+
+REC_METRIC_COLS = [
+    "total_reclamacoes",
+    "media_indice",
+    "trimestres",
+    "taxa_reclamacao_por_cliente",
+    "pct_reclamacoes_procedentes",
+]
 
 
 def join_bancos_reclamacoes(
@@ -43,7 +75,7 @@ def join_bancos_reclamacoes(
     rec_by_nome["canonical"] = rec_by_nome["join_key"].apply(resolve_acronym)
     step1 = pd.merge(
         df_bancos,
-        rec_by_cnpj[["join_key", "total_reclamacoes", "media_indice", "trimestres"]],
+        rec_by_cnpj[["join_key", *REC_METRIC_COLS]],
         left_on="cnpj_norm",
         right_on="join_key",
         how="left",
@@ -68,7 +100,7 @@ def join_bancos_reclamacoes(
                 choices.remove(best[0])
             else:
                 mapped.append(None)
-        for col in ["total_reclamacoes", "media_indice", "trimestres"]:
+        for col in REC_METRIC_COLS:
             unmatched[col] = [
                 lookup.at[m, col] if m and m in lookup.index else None for m in mapped
             ]
@@ -80,20 +112,24 @@ def join_bancos_reclamacoes(
 
 
 def deduplicate(df: pd.DataFrame) -> pd.DataFrame:
-    return df.drop_duplicates(subset=["nome_norm"], keep="first")
+    has_cnpj = df["cnpj_norm"].ne("") & df["cnpj_norm"].notna()
+    with_cnpj = df[has_cnpj].drop_duplicates(subset=["cnpj_norm"], keep="first")
+    without_cnpj = df[~has_cnpj].drop_duplicates(subset=["nome_norm"], keep="first")
+    return pd.concat([with_cnpj, without_cnpj], ignore_index=True)
 
 
 def join_empregados(
     df: pd.DataFrame,
     df_empregados: pd.DataFrame,
 ) -> pd.DataFrame:
+    rating_cols = [c for c in RATING_COLS if c in df_empregados.columns]
     emp_key = df_empregados.dropna(subset=["cnpj_norm"])
     emp_key = emp_key[emp_key["cnpj_norm"] != ""]
     result = df.copy()
     if not emp_key.empty:
         result = pd.merge(
             result,
-            emp_key[["cnpj_norm", "Geral", "Cultura e valores"]],
+            emp_key[["cnpj_norm", *rating_cols]],
             on="cnpj_norm",
             how="left",
         )
@@ -126,6 +162,6 @@ def join_empregados(
                     available = available.drop(match_idx)
                 else:
                     continue
-            for col in ["Geral", "Cultura e valores"]:
+            for col in rating_cols:
                 result.at[idx, col] = row[col]
     return result
