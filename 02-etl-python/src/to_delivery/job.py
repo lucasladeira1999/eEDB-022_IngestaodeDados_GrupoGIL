@@ -10,35 +10,24 @@ from to_delivery.join import (
     join_bancos_reclamacoes,
     join_empregados,
 )
+from sql_schema import create_table_sql
 from utils import setup_logger
 
 logger = setup_logger()
 
-CREATE_TABLE_SQL = """
-CREATE TABLE IF NOT EXISTS banco_final (
-    nome VARCHAR(500),
-    nome_norm VARCHAR(255),
-    cnpj_norm VARCHAR(20),
-    segmento VARCHAR(10),
-    total_reclamacoes BIGINT,
-    media_indice DOUBLE PRECISION,
-    trimestres INTEGER,
-    geral DOUBLE PRECISION,
-    cultura_e_valores DOUBLE PRECISION
-)
-"""
+TABLE_NAME = "bancos_indicadores"
 
 
 def save_to_postgres(df: pd.DataFrame, postgres_uri: str) -> None:
     conn = psycopg2.connect(postgres_uri)
     conn.autocommit = True
     cursor = conn.cursor()
-    cursor.execute(CREATE_TABLE_SQL)
-    cursor.execute("TRUNCATE TABLE banco_final")
+    cursor.execute(create_table_sql(TABLE_NAME, df))
+    cursor.execute(f"TRUNCATE TABLE {TABLE_NAME}")
     cols = list(df.columns)
     placeholders = ", ".join(["%s"] * len(cols))
     quoted_cols = ", ".join(f'"{c}"' for c in cols)
-    insert_sql = f"INSERT INTO banco_final ({quoted_cols}) VALUES ({placeholders})"
+    insert_sql = f"INSERT INTO {TABLE_NAME} ({quoted_cols}) VALUES ({placeholders})"
     for _, row in df.iterrows():
         values = tuple(
             None
@@ -49,7 +38,7 @@ def save_to_postgres(df: pd.DataFrame, postgres_uri: str) -> None:
             for v in row
         )
         cursor.execute(insert_sql, values)
-    logger.info(f"Inserted {len(df)} rows into banco_final (Postgres)")
+    logger.info(f"Inserted {len(df)} rows into {TABLE_NAME} (Postgres)")
     cursor.close()
     conn.close()
 
@@ -81,8 +70,20 @@ class ToDeliveryJob:
         rename_map = {
             "Segmento": "segmento",
             "Nome": "nome",
-            "Geral": "geral",
-            "Cultura e valores": "cultura_e_valores",
+            "total_reclamacoes": "reclamacao_total",
+            "media_indice": "reclamacao_indice_bacen",
+            "trimestres": "reclamacao_trimestres",
+            "taxa_reclamacao_por_cliente": "reclamacao_indice_calculado",
+            "pct_reclamacoes_procedentes": "reclamacao_pct_procedentes",
+            "Geral": "avaliacao_geral",
+            "Cultura e valores": "avaliacao_cultura",
+            "Diversidade e inclusão": "avaliacao_diversidade",
+            "Qualidade de vida": "avaliacao_qualidade_vida",
+            "Alta liderança": "avaliacao_lideranca",
+            "Remuneração e benefícios": "avaliacao_remuneracao",
+            "Oportunidades de carreira": "avaliacao_carreira",
+            "Recomendam para outras pessoas(%)": "avaliacao_recomendam_pct",
+            "Perspectiva positiva da empresa(%)": "avaliacao_perspectiva_pct",
         }
         df = df.rename(columns={k: v for k, v in rename_map.items() if k in df.columns})
         output_cols = [
@@ -90,20 +91,33 @@ class ToDeliveryJob:
             "nome_norm",
             "cnpj_norm",
             "segmento",
-            "total_reclamacoes",
-            "media_indice",
-            "trimestres",
-            "geral",
-            "cultura_e_valores",
+            "reclamacao_total",
+            "reclamacao_indice_bacen",
+            "reclamacao_trimestres",
+            "reclamacao_indice_calculado",
+            "reclamacao_pct_procedentes",
+            "avaliacao_geral",
+            "avaliacao_cultura",
+            "avaliacao_diversidade",
+            "avaliacao_qualidade_vida",
+            "avaliacao_lideranca",
+            "avaliacao_remuneracao",
+            "avaliacao_carreira",
+            "avaliacao_recomendam_pct",
+            "avaliacao_perspectiva_pct",
         ]
         output_cols = [c for c in output_cols if c in df.columns]
         df = df[output_cols]
 
-        output_key = "banco_final.parquet"
+        for int_col in ["reclamacao_total", "reclamacao_trimestres"]:
+            if int_col in df.columns:
+                df[int_col] = df[int_col].astype("Int64")
+
+        output_key = "bancos_indicadores.parquet"
         local_output = f"/tmp/{output_key}"
         df.to_parquet(local_output, index=False)
         s3_client.upload_file(local_output, delivery_bucket, output_key)
-        logger.info(f"Saved banco_final.parquet to s3://{delivery_bucket}/{output_key}")
+        logger.info(f"Saved bancos_indicadores.parquet to s3://{delivery_bucket}/{output_key}")
 
         if "postgres_uri" in config:
             save_to_postgres(df, config["postgres_uri"])
