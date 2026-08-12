@@ -5,8 +5,8 @@ Atividades da disciplina, uma pasta por semana. Todas partem das mesmas três ba
 
 | # | Tema | Ferramentas | Status |
 |---|---|---|---|
-| [01](01-etl-visual/) | ETL visual | Apache Hop + Postgres | 🚧 em andamento |
-| [02](02-etl-python/) | ETL com Python | Pandas + Postgres | ⬜ |
+| [01](01-etl-visual/) | ETL visual | Apache Hop + Postgres | ✅ feito |
+| [02](02-etl-python/) | ETL com Python | Pandas + AWS S3 + Redshift (Terraform) | ✅ feito |
 | [03](03-etl-pyspark/) | ETL com PySpark | Spark + Python | ⬜ |
 | [04](04-sql-dbt/) | Transformações SQL | dbt + DuckDB | ⬜ |
 | [05](05-orquestracao/) | Orquestração, qualidade e metadados | Airflow · Great Expectations · DataHub | ⬜ |
@@ -26,11 +26,4 @@ Cada atividade referencia `../../dados` — a base é versionada uma vez só.
 
 ## Saída comum
 
-Todas as atividades de ETL produzem a mesma tabela final, **`trusted.banco_final`**: uma
-linha por banco, unindo segmento, indicadores de reclamação e notas do Glassdoor. Manter o
-mesmo schema entre as semanas permite comparar as ferramentas resolvendo o problema
-idêntico — e é o que torna a atividade 06 uma reimplementação real, não um recomeço.
-
-O desafio recorrente é o mesmo em todas: as três bases escrevem o nome do mesmo banco de
-formas diferentes (`ITAU - PRUDENCIAL` / `ITAÚ (conglomerado)` / `Itaú Unibanco`), então
-normalizar a chave antes de juntar é o cerne do tratamento.
+Todas as atividades de ETL resolvem o mesmo problema: unir as três bases numa tabela final, uma linha por banco, cruzando segmento, indicadores de reclamação e notas do Glassdoor.

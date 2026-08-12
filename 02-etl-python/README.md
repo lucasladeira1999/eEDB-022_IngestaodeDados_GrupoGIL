@@ -1,6 +1,10 @@
 # 02-etl-python
 
-TODO: ADICIONAR CONTEXTO
+Requisito: ingerir as três bases em um banco relacional open source e gerar uma tabela
+final tratada e unida, com o tratamento feito **em Python** (sem SQL).
+
+Pipeline: S3 (raw → trusted em Parquet → delivery) → Redshift, orquestrado por
+`src/main.py` em 4 jobs sequenciais. Infra provisionada via Terraform (`infra/`).
 
 ## Setup AWS
 
@@ -78,8 +82,23 @@ python src/main.py
 O `main.py` roda, em sequência, os 4 jobs definidos em `src/`:
 
 1. **`to_raw`**: envia todos os arquivos da pasta `dados_path` para o bucket `raw_bucket`, mantendo a mesma estrutura de pastas.
-2. **`to_trusted`**: lê os arquivos do `raw_bucket`, limpa/padroniza os dados e grava um `.parquet` por fonte no `trusted_bucket`.
-3. **`to_delivery`**: copia todos os objetos do `trusted_bucket` para o `delivery_bucket`.
-4. **`to_redshift`**: para cada `.parquet` do `delivery_bucket`, cria a tabela correspondente no Redshift caso não exista (`CREATE TABLE IF NOT EXISTS`, com o schema inferido a partir do DataFrame) e carrega os registros via `COPY ... IAM_ROLE ... FORMAT AS PARQUET` (bulk load direto do S3, bem mais rápido que inserir linha a linha).
+2. **`to_trusted`**: lê os arquivos do `raw_bucket`, limpa/padroniza os dados (normaliza nome/CNPJ, converte tipos) e grava um `.parquet` por fonte (`bancos`, `empregados`, `reclamacoes`) no `trusted_bucket`.
+3. **`to_delivery`**: lê os 3 parquets do `trusted_bucket` e junta as fontes (`to_delivery/join.py`: agrega reclamações por banco, casa por CNPJ e, quando falta, por nome com fuzzy matching + resolução de siglas, remove duplicatas do cadastro priorizando `cnpj_norm` como chave) num único `bancos_indicadores.parquet` no `delivery_bucket` — a tabela final tratada e unida (OBT) que a atividade exige. Além dos campos originais, calcula indicadores derivados (`reclamacao_indice_calculado`: reclamações por cliente via CCS/SCR; `reclamacao_pct_procedentes`: % de reclamações procedentes) e traz as 9 avaliações do Glassdoor (`avaliacao_geral`, `avaliacao_cultura`, `avaliacao_diversidade`, `avaliacao_qualidade_vida`, `avaliacao_lideranca`, `avaliacao_remuneracao`, `avaliacao_carreira`, `avaliacao_recomendam_pct`, `avaliacao_perspectiva_pct`).
+4. **`to_redshift`**: para cada `.parquet` do `delivery_bucket` (hoje só `bancos_indicadores.parquet`), cria a tabela correspondente no Redshift caso não exista (`CREATE TABLE IF NOT EXISTS`, com o schema inferido a partir do DataFrame) e carrega os registros via `COPY ... IAM_ROLE ... FORMAT AS PARQUET` (bulk load direto do S3, bem mais rápido que inserir linha a linha). O DDL é gerado por `src/sql_schema.py`, módulo compartilhado com o `to_delivery` (debug via Postgres) para manter os dois caminhos com o mesmo schema.
 
 Para rodar apenas alguns jobs, comente as chamadas correspondentes em `src/main.py`.
+
+### Debug local opcional: espelhar no Postgres da atividade 01
+
+Se `postgres_uri` estiver definido no `config.yaml`, o `to_delivery` também grava o
+`bancos_indicadores` num Postgres local (o mesmo `docker-compose` da
+[`01-etl-visual`](../01-etl-visual/)), pra comparar lado a lado com o resultado do Apache
+Hop. É opcional — não faz parte da entrega desta atividade (que é S3 → Redshift) e não roda
+se a chave não existir no config.
+
+### Legado: `src/s3_trusted/`
+
+Os arquivos `.parquet` em `src/s3_trusted/` são resultado de um teste local antigo (execução
+do `to_trusted` sem S3) e não são lidos por nenhum job do pipeline atual — o `to_delivery`
+sempre baixa os parquets direto do `trusted_bucket` no S3. Mantidos por ora só como histórico;
+candidatos a remoção numa limpeza futura.
