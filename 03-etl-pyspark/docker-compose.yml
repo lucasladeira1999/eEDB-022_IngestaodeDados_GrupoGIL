@@ -1,0 +1,60 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: atividade3-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: postgres
+      # lido pelo init.sh para criar o usuário do Hop
+      ETL_PASSWORD: ${ETL_PASSWORD}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Roda sozinho na primeira vez que o banco sobe: cria o banco glassdoor,
+      # o usuário etl e os schemas raw/trusted.
+      - ./init.sh:/docker-entrypoint-initdb.d/init.sh:ro
+    healthcheck:
+      # -h localhost força TCP: durante o init.sh a porta ainda está fechada,
+      # então o healthcheck só passa quando o banco está de fato pronto.
+      test: ["CMD-SHELL", "pg_isready -h localhost -U $$POSTGRES_USER -d glassdoor"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # job em lote sobe, processa raw, trusted e delivery.
+  spark-job:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: atividade3-spark-job
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PG_HOST: postgres
+      PG_PORT: "5432"
+      PG_DB: glassdoor
+      PG_USER: etl
+      PG_PASSWORD: ${ETL_PASSWORD}
+      DADOS_DIR: /dados
+    volumes:
+      - ../dados:/dados:ro
+    profiles: ["job"]
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: atividade3-pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    ports:
+      - "5050:80"
+
+volumes:
+  pgdata:
