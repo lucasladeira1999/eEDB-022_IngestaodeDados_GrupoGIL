@@ -3,8 +3,9 @@ from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql import functions as F
 from rapidfuzz import fuzz, process
 from to_delivery.acronyms import resolve_acronym
-from utils import read_table, write_table
+from utils import read_parquet, write_parquet, write_table, setup_logger
 
+logger = setup_logger()
 
 FINAL_COLUMNS = [
     "segmento", "cnpj", "nome", "cnpj_norm", "nome_norm", "qtd_total_reclamacoes", "qtd_procedentes", "indice_medio", "trimestres_com_reclamacao", "nota_geral", "nota_cultura", "nota_diversidade", "nota_qualidade_vida", "nota_lideranca", "nota_remuneracao", "nota_carreira", "pct_recomendam", "pct_perspectiva"
@@ -38,7 +39,6 @@ def _agrega_reclamacoes(reclamacoes: DataFrame, coluna_chave: str, prefixo: str)
 
 
 def _fuzzy_lookup(spark, nomes_sem_match: list[str], nomes_candidatos: list[str], score_cutoff: int) -> DataFrame:
-    
     schema = "nome_norm string, nome_norm_candidato string"
     if not nomes_sem_match or not nomes_candidatos:
         return spark.createDataFrame([], schema=schema)
@@ -64,7 +64,6 @@ def _fuzzy_lookup(spark, nomes_sem_match: list[str], nomes_candidatos: list[str]
 
 
 def _completa_com_fuzzy(spark, df: DataFrame, coluna_indicador: str, candidatos: DataFrame, colunas_metricas: list[str], score_cutoff: int) -> DataFrame:
-
     sem_match = [
         linha["nome_norm"]
         for linha in df.filter(F.col(coluna_indicador).isNull()).select("nome_norm").collect()
@@ -94,9 +93,9 @@ def _completa_com_fuzzy(spark, df: DataFrame, coluna_indicador: str, candidatos:
 
 
 def run(spark) -> None:
-    bancos = read_table(spark, "trusted", "bancos").dropDuplicates(["nome_norm"])
-    reclamacoes = read_table(spark, "trusted", "reclamacoes")
-    empregados = read_table(spark, "trusted", "empregados").dropDuplicates(["nome_norm"])
+    bancos = read_parquet(spark, "trusted", "bancos").dropDuplicates(["nome_norm"])
+    reclamacoes = read_parquet(spark, "trusted", "reclamacoes")
+    empregados = read_parquet(spark, "trusted", "empregados").dropDuplicates(["nome_norm"])
 
     por_cnpj = _agrega_reclamacoes(reclamacoes, "cnpj_norm", "c")
     por_nome = _agrega_reclamacoes(reclamacoes, "nome_norm", "n")
@@ -112,7 +111,6 @@ def run(spark) -> None:
         .withColumn("trimestres_com_reclamacao", F.coalesce("c_trimestres", "n_trimestres"))
     )
 
-    # fallback fuzzy: bancos que nao acharam reclamacao nem por cnpj nem por nome exato
     por_nome_final = (
         por_nome
         .withColumnRenamed("n_qtd_total", "qtd_total_reclamacoes")
@@ -129,7 +127,6 @@ def run(spark) -> None:
     empregados_selecionado = empregados.select("nome_norm", *RATING_MAP.keys())
     df = df.join(empregados_selecionado, on="nome_norm", how="left")
 
-    # fallback fuzzy: bancos que nao acharam avaliacao do Glassdoor por nome exato
     df = _completa_com_fuzzy(
         spark, df, "geral", empregados_selecionado, list(RATING_MAP.keys()), score_cutoff=90,
     )
@@ -138,4 +135,9 @@ def run(spark) -> None:
         df = df.withColumnRenamed(origem, destino)
 
     banco_final = df.select(*FINAL_COLUMNS)
+
+    logger.info("Saving delivery data as Parquet")
+    write_parquet(banco_final, "delivery", "banco_final")
+
+    logger.info("Saving delivery.banco_final as the final table in Postgres")
     write_table(banco_final, "delivery", "banco_final")

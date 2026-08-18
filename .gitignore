@@ -21,3 +21,5 @@ venv/
 
 # config local
 02-etl-python/src/config.yaml
+
+03-etl-pyspark/src/data/

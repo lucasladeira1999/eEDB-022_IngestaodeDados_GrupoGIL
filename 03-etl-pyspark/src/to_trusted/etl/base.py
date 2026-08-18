@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from pyspark.sql import DataFrame, SparkSession
-from utils import read_table, setup_logger, write_table
+from pyspark.sql import DataFrame
+from utils import read_table, setup_logger, write_parquet
 
 logger = setup_logger()
 
@@ -17,8 +17,8 @@ class BaseETL(ABC):
         raise NotImplementedError
 
     def save_data(self, df: DataFrame) -> None:
-        logger.info(f"Saving trusted data for {self.name}")
-        write_table(df, "trusted", self.name)
+        logger.info(f"Saving trusted data for {self.name} as Parquet")
+        write_parquet(df, "trusted", self.name)
 
     def run(self, spark) -> None:
         df = self.get_data(spark)

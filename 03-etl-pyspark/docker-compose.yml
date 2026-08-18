@@ -5,20 +5,20 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: glassdoor
+      POSTGRES_DB: ${POSTGRES_DB}
       # lido pelo init.sh para criar o usuário do Hop
       ETL_PASSWORD: ${ETL_PASSWORD}
     ports:
       - "${POSTGRES_PORT}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      # Roda sozinho na primeira vez que o banco sobe: cria o banco glassdoor,
+      # Roda sozinho na primeira vez que o banco sobe: cria o banco postgres,
       # o usuário etl e os schemas raw/trusted.
       - ./init.sh:/docker-entrypoint-initdb.d/init.sh:ro
     healthcheck:
       # -h localhost força TCP: durante o init.sh a porta ainda está fechada,
       # então o healthcheck só passa quando o banco está de fato pronto.
-      test: ["CMD-SHELL", "pg_isready -h localhost -U $$POSTGRES_USER -d glassdoor"]
+      test: ["CMD-SHELL", "pg_isready -h localhost -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -33,14 +33,16 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      PG_HOST: postgres
+      PG_HOST: ${POSTGRES_DB}
       PG_PORT: "5432"
-      PG_DB: glassdoor
+      PG_DB: ${POSTGRES_DB}
       PG_USER: ${POSTGRES_USER}
       PG_PASSWORD: ${POSTGRES_PASSWORD}
       DADOS_DIR: /dados
+      LOCAL_DATA_DIR: /src/data
     volumes:
       - ../dados:/dados:ro
+      - ./src/data:/src/data
     profiles: ["job"]
 
   pgadmin:

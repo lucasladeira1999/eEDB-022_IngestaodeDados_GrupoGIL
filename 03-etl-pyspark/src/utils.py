@@ -3,6 +3,7 @@ import yaml
 import os
 from pyspark.sql import DataFrame, SparkSession
 
+
 def setup_logger() -> logging.Logger:
     logging.basicConfig(
         level=logging.INFO,
@@ -47,3 +48,18 @@ def write_table(df: DataFrame, schema: str, table: str) -> None:
         mode="overwrite",
         properties=_jdbc_properties(),
     )
+
+
+def _layer_dir(layer: str) -> str:
+    base_dir = os.environ.get("LOCAL_DATA_DIR", "/data")
+    return os.path.join(base_dir, layer)
+
+
+def write_parquet(df: DataFrame, layer: str, name: str) -> None:
+    path = os.path.join(_layer_dir(layer), name)
+    df.write.mode("overwrite").parquet(path)
+
+
+def read_parquet(spark: SparkSession, layer: str, name: str) -> DataFrame:
+    path = os.path.join(_layer_dir(layer), name)
+    return spark.read.parquet(path)
