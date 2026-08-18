@@ -7,12 +7,7 @@ from utils import read_table, write_table
 
 
 FINAL_COLUMNS = [
-    "segmento", "cnpj", "nome", "cnpj_norm", "nome_norm",
-    "qtd_total_reclamacoes", "qtd_procedentes", "indice_medio",
-    "trimestres_com_reclamacao",
-    "nota_geral", "nota_cultura", "nota_diversidade", "nota_qualidade_vida",
-    "nota_lideranca", "nota_remuneracao", "nota_carreira",
-    "pct_recomendam", "pct_perspectiva",
+    "segmento", "cnpj", "nome", "cnpj_norm", "nome_norm", "qtd_total_reclamacoes", "qtd_procedentes", "indice_medio", "trimestres_com_reclamacao", "nota_geral", "nota_cultura", "nota_diversidade", "nota_qualidade_vida", "nota_lideranca", "nota_remuneracao", "nota_carreira", "pct_recomendam", "pct_perspectiva"
 ]
 
 RATING_MAP = {
@@ -42,16 +37,8 @@ def _agrega_reclamacoes(reclamacoes: DataFrame, coluna_chave: str, prefixo: str)
     )
 
 
-def _fuzzy_lookup(
-    spark: SparkSession,
-    nomes_sem_match: list[str],
-    nomes_candidatos: list[str],
-    score_cutoff: int,
-) -> DataFrame:
-    """Para cada nome sem correspondencia exata, acha o candidato mais parecido
-    (por sigla ou por similaridade de texto). Cada candidato so pode ser usado
-    uma vez. Roda no driver: as listas envolvidas sao pequenas (nomes distintos
-    de bancos/empregados), entao nao vale a pena distribuir isso no cluster."""
+def _fuzzy_lookup(spark, nomes_sem_match: list[str], nomes_candidatos: list[str], score_cutoff: int) -> DataFrame:
+    
     schema = "nome_norm string, nome_norm_candidato string"
     if not nomes_sem_match or not nomes_candidatos:
         return spark.createDataFrame([], schema=schema)
@@ -76,17 +63,8 @@ def _fuzzy_lookup(
     return spark.createDataFrame(linhas, schema=schema)
 
 
-def _completa_com_fuzzy(
-    spark: SparkSession,
-    df: DataFrame,
-    coluna_indicador: str,
-    candidatos: DataFrame,
-    colunas_metricas: list[str],
-    score_cutoff: int,
-) -> DataFrame:
-    """Preenche colunas_metricas via fuzzy match do nome_norm, so para as linhas
-    de df onde coluna_indicador ainda esta nula (ou seja, nao acharam match
-    exato por cnpj nem por nome)."""
+def _completa_com_fuzzy(spark, df: DataFrame, coluna_indicador: str, candidatos: DataFrame, colunas_metricas: list[str], score_cutoff: int) -> DataFrame:
+
     sem_match = [
         linha["nome_norm"]
         for linha in df.filter(F.col(coluna_indicador).isNull()).select("nome_norm").collect()
@@ -115,7 +93,7 @@ def _completa_com_fuzzy(
     return df
 
 
-def run(spark: SparkSession) -> None:
+def run(spark) -> None:
     bancos = read_table(spark, "trusted", "bancos").dropDuplicates(["nome_norm"])
     reclamacoes = read_table(spark, "trusted", "reclamacoes")
     empregados = read_table(spark, "trusted", "empregados").dropDuplicates(["nome_norm"])

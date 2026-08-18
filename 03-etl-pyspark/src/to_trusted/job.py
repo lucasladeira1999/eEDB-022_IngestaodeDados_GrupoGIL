@@ -8,7 +8,7 @@ ETL_JOBS = [BancosETL, EmpregadosETL, ReclamacoesETL]
 logger = setup_logger()
 
 
-def run(spark: SparkSession) -> None:
+def run(spark) -> None:
     for etl_class in ETL_JOBS:
         logger.info(f"Running ETL job for {etl_class.name}")
         etl_class().run(spark)
