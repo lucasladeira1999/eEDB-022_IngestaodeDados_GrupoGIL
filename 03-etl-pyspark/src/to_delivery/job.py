@@ -1,4 +1,5 @@
 from __future__ import annotations
+import os
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql import functions as F
 from rapidfuzz import fuzz, process
@@ -6,6 +7,13 @@ from to_delivery.acronyms import resolve_acronym
 from utils import read_parquet, write_parquet, write_table, setup_logger
 
 logger = setup_logger()
+
+TRUSTED_SCHEMA = os.environ.get("TRUSTED_SCHEMA", "trusted")
+DELIVERY_SCHEMA = os.environ.get("DELIVERY_SCHEMA", "delivery")
+DELIVERY_TABLE = os.environ.get("DELIVERY_TABLE", "bancos_indicadores")
+
+FUZZY_SCORE_CUTOFF_RECLAMACOES = int(os.environ.get("FUZZY_SCORE_CUTOFF_RECLAMACOES", "80"))
+FUZZY_SCORE_CUTOFF_EMPREGADOS = int(os.environ.get("FUZZY_SCORE_CUTOFF_EMPREGADOS", "90"))
 
 FINAL_COLUMNS = [
     "segmento", "cnpj", "nome", "cnpj_norm", "nome_norm", "qtd_total_reclamacoes", "qtd_procedentes", "indice_medio", "trimestres_com_reclamacao", "nota_geral", "nota_cultura", "nota_diversidade", "nota_qualidade_vida", "nota_lideranca", "nota_remuneracao", "nota_carreira", "pct_recomendam", "pct_perspectiva"
@@ -22,6 +30,13 @@ RATING_MAP = {
     "recomendam_pct": "pct_recomendam",
     "perspectiva_pct": "pct_perspectiva",
 }
+
+
+def _dedup_por_cnpj(df: DataFrame) -> DataFrame:
+    tem_cnpj = (F.col("cnpj_norm").isNotNull()) & (F.col("cnpj_norm") != "")
+    com_cnpj = df.filter(tem_cnpj).dropDuplicates(["cnpj_norm"])
+    sem_cnpj = df.filter(~tem_cnpj).dropDuplicates(["nome_norm"])
+    return com_cnpj.unionByName(sem_cnpj)
 
 
 def _agrega_reclamacoes(reclamacoes: DataFrame, coluna_chave: str, prefixo: str) -> DataFrame:
@@ -93,9 +108,9 @@ def _completa_com_fuzzy(spark, df: DataFrame, coluna_indicador: str, candidatos:
 
 
 def run(spark) -> None:
-    bancos = read_parquet(spark, "trusted", "bancos").dropDuplicates(["nome_norm"])
-    reclamacoes = read_parquet(spark, "trusted", "reclamacoes")
-    empregados = read_parquet(spark, "trusted", "empregados").dropDuplicates(["nome_norm"])
+    bancos = _dedup_por_cnpj(read_parquet(spark, TRUSTED_SCHEMA, "bancos"))
+    reclamacoes = read_parquet(spark, TRUSTED_SCHEMA, "reclamacoes")
+    empregados = _dedup_por_cnpj(read_parquet(spark, TRUSTED_SCHEMA, "empregados"))
 
     por_cnpj = _agrega_reclamacoes(reclamacoes, "cnpj_norm", "c")
     por_nome = _agrega_reclamacoes(reclamacoes, "nome_norm", "n")
@@ -121,14 +136,15 @@ def run(spark) -> None:
     df = _completa_com_fuzzy(
         spark, df, "qtd_total_reclamacoes", por_nome_final,
         ["qtd_total_reclamacoes", "qtd_procedentes", "indice_medio", "trimestres_com_reclamacao"],
-        score_cutoff=80,
+        score_cutoff=FUZZY_SCORE_CUTOFF_RECLAMACOES,
     )
 
     empregados_selecionado = empregados.select("nome_norm", *RATING_MAP.keys())
     df = df.join(empregados_selecionado, on="nome_norm", how="left")
 
     df = _completa_com_fuzzy(
-        spark, df, "geral", empregados_selecionado, list(RATING_MAP.keys()), score_cutoff=90,
+        spark, df, "geral", empregados_selecionado, list(RATING_MAP.keys()),
+        score_cutoff=FUZZY_SCORE_CUTOFF_EMPREGADOS,
     )
 
     for origem, destino in RATING_MAP.items():
@@ -137,7 +153,7 @@ def run(spark) -> None:
     banco_final = df.select(*FINAL_COLUMNS)
 
     logger.info("Saving delivery data as Parquet")
-    write_parquet(banco_final, "delivery", "banco_final")
+    write_parquet(banco_final, DELIVERY_SCHEMA, DELIVERY_TABLE)
 
-    logger.info("Saving delivery.banco_final as the final table in Postgres")
-    write_table(banco_final, "delivery", "banco_final")
+    logger.info(f"Saving {DELIVERY_SCHEMA}.{DELIVERY_TABLE} as the final table in Postgres")
+    write_table(banco_final, DELIVERY_SCHEMA, DELIVERY_TABLE)
