@@ -1,18 +1,13 @@
-#!/bin/bash## Executado automaticamente pelo Postgres na primeira inicialização.
+#!/bin/bash
+# Executado automaticamente pelo Postgres na primeira inicialização.
 # Para rodar de novo depois de editar: docker compose down -v && docker compose up -d
 set -e
 
-# Usuário usado pelo Apache Hop (não usamos o superusuário no pipeline).
-# A senha vem do .env, via ETL_PASSWORD.
-psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
-	CREATE USER etl WITH PASSWORD '${ETL_PASSWORD}';
-	CREATE DATABASE '${POSTGRES_DB}' OWNER etl;
-EOSQL
-
-# Camadas: raw = fiel ao arquivo, trusted = limpo e tipado por fonte,
-# delivery = modelo final entregue (join das três fontes)
+# O Postgres já cria o banco $POSTGRES_DB sozinho a partir da env var,
+# então só precisamos criar os schemas das camadas.
+# raw = fiel ao arquivo, trusted = Parquet local, delivery = modelo final (tabela + Parquet)
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-	CREATE SCHEMA raw      AUTHORIZATION etl;
-	CREATE SCHEMA trusted  AUTHORIZATION etl;
-	CREATE SCHEMA delivery AUTHORIZATION etl;
+	CREATE SCHEMA "${RAW_SCHEMA}";
+	CREATE SCHEMA "${TRUSTED_SCHEMA}";
+	CREATE SCHEMA "${DELIVERY_SCHEMA}";
 EOSQL
