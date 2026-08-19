@@ -1,13 +1,12 @@
 #!/bin/bash
-# Executado automaticamente pelo Postgres na primeira inicialização.
+# Executado automaticamente pelo Postgres na primeira inicializacao.
 # Para rodar de novo depois de editar: docker compose down -v && docker compose up -d
 set -e
 
-# O Postgres já cria o banco $POSTGRES_DB sozinho a partir da env var,
-# então só precisamos criar os schemas das camadas.
-# raw = fiel ao arquivo, trusted = Parquet local, delivery = modelo final (tabela + Parquet)
+# Usuario usado pelo job Spark para ler e gravar a camada raw.
+# Nao usamos o superusuario no pipeline. A senha vem do .env, via ETL_PASSWORD.
+# So a camada raw fica no Postgres; trusted e delivery ficam em Parquet.
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-	CREATE SCHEMA "${RAW_SCHEMA}";
-	CREATE SCHEMA "${TRUSTED_SCHEMA}";
-	CREATE SCHEMA "${DELIVERY_SCHEMA}";
+	CREATE USER etl WITH PASSWORD '${ETL_PASSWORD}';
+	CREATE SCHEMA raw AUTHORIZATION etl;
 EOSQL
