@@ -7,7 +7,7 @@ Atividades da disciplina, uma pasta por semana. Todas partem das mesmas três ba
 |---|---|---|---|
 | [01](01-etl-visual/) | ETL visual | Apache Hop + Postgres | ✅ feito |
 | [02](02-etl-python/) | ETL com Python | Pandas + AWS S3 + Redshift (Terraform) | ✅ feito |
-| [03](03-etl-pyspark/) | ETL com PySpark | Spark + Python | ⬜ |
+| [03](03-etl-pyspark/) | ETL com PySpark | Spark + Python | ✅ feito |
 | [04](04-sql-dbt/) | Transformações SQL | dbt + DuckDB | ⬜ |
 | [05](05-orquestracao/) | Orquestração, qualidade e metadados | Airflow · Great Expectations · DataHub | ⬜ |
 | [06](06-aws/) | Implementação na cloud | AWS — reimplementa a 02, 03 ou 04 | ⬜ |
