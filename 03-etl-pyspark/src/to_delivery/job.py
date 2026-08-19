@@ -4,7 +4,7 @@ from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql import functions as F
 from rapidfuzz import fuzz, process
 from to_delivery.acronyms import resolve_acronym
-from utils import read_parquet, write_parquet, setup_logger
+from utils import read_parquet, write_parquet, write_table, setup_logger
 
 logger = setup_logger()
 
