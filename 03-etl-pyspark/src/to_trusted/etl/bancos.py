@@ -7,6 +7,11 @@ class BancosETL(BaseETL):
     name = "bancos"
 
     def clean_data(self, df: DataFrame) -> DataFrame:
+        df = df.select(
+            df["Segmento"].alias("segmento"),
+            df["CNPJ"].alias("cnpj"),
+            df["Nome"].alias("nome"),
+        )
         return df.withColumn("nome_norm", normalize_text_udf(df["nome"])).withColumn(
             "cnpj_norm", normalize_cnpj_udf(df["cnpj"])
         )
