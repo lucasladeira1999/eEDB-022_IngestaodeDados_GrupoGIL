@@ -1,18 +1,12 @@
-#!/bin/bash## Executado automaticamente pelo Postgres na primeira inicialização.
+#!/bin/bash
+# Executado automaticamente pelo Postgres na primeira inicializacao.
 # Para rodar de novo depois de editar: docker compose down -v && docker compose up -d
 set -e
 
-# Usuário usado pelo Apache Hop (não usamos o superusuário no pipeline).
-# A senha vem do .env, via ETL_PASSWORD.
-psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
-	CREATE USER etl WITH PASSWORD '${ETL_PASSWORD}';
-	CREATE DATABASE '${POSTGRES_DB}' OWNER etl;
-EOSQL
-
-# Camadas: raw = fiel ao arquivo, trusted = limpo e tipado por fonte,
-# delivery = modelo final entregue (join das três fontes)
+# Usuario usado pelo job Spark para ler e gravar a camada raw.
+# Nao usamos o superusuario no pipeline. A senha vem do .env, via ETL_PASSWORD.
+# So a camada raw fica no Postgres; trusted e delivery ficam em Parquet.
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-	CREATE SCHEMA raw      AUTHORIZATION etl;
-	CREATE SCHEMA trusted  AUTHORIZATION etl;
-	CREATE SCHEMA delivery AUTHORIZATION etl;
+	CREATE USER etl WITH PASSWORD '${ETL_PASSWORD}';
+	CREATE SCHEMA raw AUTHORIZATION etl;
 EOSQL

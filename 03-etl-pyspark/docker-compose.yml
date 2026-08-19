@@ -12,18 +12,16 @@ services:
       - "${POSTGRES_PORT}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      # Roda sozinho na primeira vez que o banco sobe: cria o banco postgres,
-      # o usuário etl e os schemas raw/trusted.
+      # roda sozinho na primeira vez que o banco sobe: cria o usuario etl e o schema raw
       - ./init.sh:/docker-entrypoint-initdb.d/init.sh:ro
     healthcheck:
-      # -h localhost força TCP: durante o init.sh a porta ainda está fechada,
-      # então o healthcheck só passa quando o banco está de fato pronto.
+      # -h localhost força TCP: durante o init.sh a porta ainda está fechada, então o healthcheck só passa quando o banco está de fato pronto.
       test: ["CMD-SHELL", "pg_isready -h localhost -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
       timeout: 5s
       retries: 10
 
-  # job em lote sobe, processa raw, trusted e delivery.
+  # job em lote sobe, processa raw, trusted e delivery
   spark-job:
     build:
       context: .
@@ -33,11 +31,11 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      PG_HOST: ${POSTGRES_DB}
+      PG_HOST: postgres
       PG_PORT: "5432"
       PG_DB: ${POSTGRES_DB}
-      PG_USER: ${POSTGRES_USER}
-      PG_PASSWORD: ${POSTGRES_PASSWORD}
+      PG_USER: etl
+      PG_PASSWORD: ${ETL_PASSWORD}
       DADOS_DIR: /dados
       LOCAL_DATA_DIR: /src/data
     volumes:

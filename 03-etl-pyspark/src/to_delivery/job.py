@@ -3,7 +3,7 @@ from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql import functions as F
 from rapidfuzz import fuzz, process
 from to_delivery.acronyms import resolve_acronym
-from utils import read_parquet, write_parquet, write_table, setup_logger
+from utils import read_parquet, write_parquet, setup_logger
 
 logger = setup_logger()
 
@@ -138,6 +138,3 @@ def run(spark) -> None:
 
     logger.info("Saving delivery data as Parquet")
     write_parquet(banco_final, "delivery", "banco_final")
-
-    logger.info("Saving delivery.banco_final as the final table in Postgres")
-    write_table(banco_final, "delivery", "banco_final")
