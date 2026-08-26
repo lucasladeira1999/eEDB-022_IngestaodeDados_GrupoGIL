@@ -1,0 +1,10 @@
+services:
+  dbt-pipeline:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: atividade04-dbt-pipeline
+    volumes:
+      - ../dados:/dados:ro
+      - ./data:/app/data
+    command: python scripts/run_pipeline.py

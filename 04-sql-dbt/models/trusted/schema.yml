@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: tr_bancos
+    description: "Bancos limpos, normalizados e deduplicados"
+    columns:
+      - name: nome
+        description: "Nome original do banco"
+        tests:
+          - not_null
+      - name: nome_norm
+        description: "Nome normalizado sem acentos, pontuação e sufixos"
+        tests:
+          - not_null
+      - name: cnpj_norm
+        description: "CNPJ apenas dígitos sem zeros à esquerda"
+      - name: segmento
+        description: "Segmento regulatório (S1 a S5)"
+
+  - name: tr_empregados
+    description: "Dados do Glassdoor normalizados e com notas numéricas"
+    columns:
+      - name: nome_canonico
+        description: "Nome padronizado via de-para"
+        tests:
+          - not_null
+      - name: avaliacao_geral
+        description: "Nota geral de avaliação (1 a 5)"
+
+  - name: tr_reclamacoes
+    description: "Reclamações limpas com tipos numéricos convertidos"
+    columns:
+      - name: nome_canonico
+        description: "Nome canônico da instituição"
+        tests:
+          - not_null
+      - name: qtd_total_reclamacoes
+        description: "Total de reclamações registradas"

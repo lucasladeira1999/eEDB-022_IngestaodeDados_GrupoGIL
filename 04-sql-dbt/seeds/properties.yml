@@ -1,0 +1,15 @@
+version: 2
+
+seeds:
+  - name: de_para_bancos
+    description: "Tabela de-para para resolução de siglas, acrônimos e nomes canônicos de instituições financeiras"
+    columns:
+      - name: sigla_origem
+        description: "Nome ou sigla como aparece nos dados de origem"
+        tests:
+          - unique
+          - not_null
+      - name: nome_canonico
+        description: "Nome canônico padronizado para junção"
+        tests:
+          - not_null

@@ -1,0 +1,58 @@
+version: 2
+
+models:
+  - name: del_reclamacoes_agg
+    description: "Reclamações agregadas por CNPJ e por Nome"
+    columns:
+      - name: join_key
+        description: "Chave de junção (CNPJ ou Nome Canônico)"
+        tests:
+          - not_null
+      - name: join_type
+        description: "Tipo de chave ('cnpj' ou 'nome')"
+        tests:
+          - not_null
+
+  - name: bancos_indicadores
+    description: "Tabela consolidada One Big Table (OBT) contendo dados cadastrais, reclamações BACEN e avaliações Glassdoor"
+    columns:
+      - name: nome
+        description: "Nome do banco no cadastro"
+        tests:
+          - not_null
+      - name: nome_norm
+        description: "Nome normalizado"
+        tests:
+          - not_null
+      - name: cnpj_norm
+        description: "CNPJ normalizado"
+      - name: segmento
+        description: "Segmento regulatório (S1 a S5)"
+      - name: reclamacao_total
+        description: "Total acumulado de reclamações"
+      - name: reclamacao_indice_bacen
+        description: "Média do índice BACEN de reclamações"
+      - name: reclamacao_trimestres
+        description: "Quantidade de trimestres com reclamações registradas"
+      - name: reclamacao_indice_calculado
+        description: "Taxa calculada de reclamações por cliente"
+      - name: reclamacao_pct_procedentes
+        description: "Percentual de reclamações julgadas procedentes"
+      - name: avaliacao_geral
+        description: "Nota geral no Glassdoor"
+      - name: avaliacao_cultura
+        description: "Nota de cultura e valores"
+      - name: avaliacao_diversidade
+        description: "Nota de diversidade e inclusão"
+      - name: avaliacao_qualidade_vida
+        description: "Nota de qualidade de vida"
+      - name: avaliacao_lideranca
+        description: "Nota de alta liderança"
+      - name: avaliacao_remuneracao
+        description: "Nota de remuneração e benefícios"
+      - name: avaliacao_carreira
+        description: "Nota de oportunidades de carreira"
+      - name: avaliacao_recomendam_pct
+        description: "Percentual de funcionários que recomendam a empresa"
+      - name: avaliacao_perspectiva_pct
+        description: "Percentual com perspectiva positiva da empresa"
