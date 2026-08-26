@@ -1,0 +1,7 @@
+.venv
+data
+target
+dbt_packages
+__pycache__
+*.pyc
+.git

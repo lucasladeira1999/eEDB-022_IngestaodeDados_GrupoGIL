@@ -23,3 +23,9 @@ venv/
 02-etl-python/src/config.yaml
 
 03-etl-pyspark/data/
+
+04-sql-dbt/data/
+04-sql-dbt/target/
+04-sql-dbt/dbt_packages/
+04-sql-dbt/logs/
+04-sql-dbt/.user.yml

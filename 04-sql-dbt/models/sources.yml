@@ -1,0 +1,36 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    description: "Tabelas brutas ingeridas via Python no DuckDB a partir dos arquivos fonte"
+    tables:
+      - name: bancos
+        description: "Cadastro geral de bancos e instituições financeiras"
+        columns:
+          - name: Segmento
+            description: "Segmento de enquadramento (S1, S2, S3, S4, S5)"
+          - name: CNPJ
+            description: "CNPJ da instituição"
+          - name: Nome
+            description: "Razão social ou nome fantasia"
+      - name: empregados
+        description: "Avaliações consolidadas do Glassdoor"
+        columns:
+          - name: Nome
+            description: "Nome da instituição"
+          - name: CNPJ
+            description: "CNPJ da instituição quando disponível"
+          - name: Geral
+            description: "Nota geral de avaliação"
+      - name: reclamacoes
+        description: "Reclamações trimestrais registradas no BACEN"
+        columns:
+          - name: ano
+            description: "Ano da reclamação"
+          - name: trimestre
+            description: "Trimestre da reclamação"
+          - name: instituicao_financeira
+            description: "Nome da instituição financeira"
+          - name: cnpj_if
+            description: "CNPJ da instituição financeira no BACEN"

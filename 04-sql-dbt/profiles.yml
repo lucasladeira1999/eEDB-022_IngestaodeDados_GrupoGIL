@@ -1,0 +1,10 @@
+atividade04_duckdb:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: 'data/database.duckdb'
+      threads: 4
+      extensions:
+        - parquet
+        - icu
