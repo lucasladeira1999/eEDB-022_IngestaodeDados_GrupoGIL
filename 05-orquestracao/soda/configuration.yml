@@ -1,0 +1,5 @@
+# Conexão do Soda com o mesmo arquivo DuckDB gerado pelo dbt da atividade 4 (04-sql-dbt)
+data_source duckdb_atividade4:
+  type: duckdb
+  path: "/opt/dbt_project/data/database.duckdb"
+  read_only: true

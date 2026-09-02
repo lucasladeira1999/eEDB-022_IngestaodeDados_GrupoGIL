@@ -1,0 +1,26 @@
+source:
+  type: dbt
+  serviceName: duckdb_atividade4
+  sourceConfig:
+    config:
+      type: DBT
+      dbtConfigSource:
+        dbtConfigType: local
+        dbtCatalogFilePath: /opt/dbt_project/target/catalog.json
+        dbtManifestFilePath: /opt/dbt_project/target/manifest.json
+        dbtRunResultsFilePath: /opt/dbt_project/target/run_results.json
+      dbtUpdateDescriptions: true
+      includeTags: true
+      dbtClassificationName: dbt_atividade4
+
+sink:
+  type: metadata-rest
+  config: {}
+
+workflowConfig:
+  loggerLevel: INFO
+  openMetadataServerConfig:
+    hostPort: http://openmetadata-server:8585/api
+    authProvider: openmetadata
+    securityConfig:
+      jwtToken: ""
