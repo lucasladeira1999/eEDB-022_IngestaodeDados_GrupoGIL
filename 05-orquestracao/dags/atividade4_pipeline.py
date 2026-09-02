@@ -10,7 +10,7 @@ SODA_VENV = '/home/airflow/.venv-soda/bin'
 OPENMETADATA_VENV = '/home/airflow/.venv-openmetadata/bin'
 
 DBT_CMD = (
-    f"{DBT_VENV}/dbt {{cmd}} --project-dir {DBT_PROJECT_DIR} "
+    f"cd {DBT_PROJECT_DIR} && {DBT_VENV}/dbt {{cmd}} --project-dir {DBT_PROJECT_DIR} "
     f"--profiles-dir {DBT_PROJECT_DIR} --no-partial-parse"
 )
 
