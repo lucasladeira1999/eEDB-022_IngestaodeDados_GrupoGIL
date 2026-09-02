@@ -1,0 +1,91 @@
+x-airflow-common: &airflow-common
+  build:
+    context: .
+    dockerfile: Dockerfile
+  environment: &airflow-common-env
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__WEBSERVER__SECRET_KEY: "atividade5-secret-key"
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres-airflow/airflow
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+    AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "false"
+    AIRFLOW__WEBSERVER__WORKERS: "2"
+    AIRFLOW__WEBSERVER__WEB_SERVER_MASTER_TIMEOUT: "300"
+    AIRFLOW__WEBSERVER__WEB_SERVER_WORKER_TIMEOUT: "300"
+    DBT_PROJECT_DIR: /opt/dbt_project
+    SODA_CONFIG_DIR: /opt/airflow/soda
+    OPENMETADATA_CONFIG_DIR: /opt/airflow/openmetadata
+    OPENMETADATA_HOST_PORT: http://openmetadata-server:8585/api
+    OPENMETADATA_ADMIN_EMAIL: ${OPENMETADATA_ADMIN_EMAIL:-admin@open-metadata.org}
+    OPENMETADATA_ADMIN_PASSWORD: ${OPENMETADATA_ADMIN_PASSWORD:-admin}
+  networks:
+    - default
+    - openmetadata_net
+  volumes:
+    - ./dags:/opt/airflow/dags
+    - ./soda:/opt/airflow/soda
+    - ./openmetadata:/opt/airflow/openmetadata
+    # Reaproveita o projeto dbt da atividade 4
+    - ../04-sql-dbt:/opt/dbt_project
+    # Sobrepoe a pasta data/ do projeto dbt com uma pasta dessa atividade para nao tocar no estado da atividade 4
+    - ./data:/opt/dbt_project/data
+    - ../dados:/dados:ro
+  depends_on:
+    postgres-airflow:
+      condition: service_healthy
+
+services:
+  postgres-airflow:
+    image: postgres:16-alpine
+    container_name: atividade5-postgres-airflow
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - airflow-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow -d airflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  airflow-init:
+    <<: *airflow-common
+    container_name: atividade5-airflow-init
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        airflow db migrate
+        airflow users create \
+          --username admin --password admin \
+          --firstname Admin --lastname User \
+          --role Admin --email admin@example.com || true
+
+  airflow-webserver:
+    <<: *airflow-common
+    container_name: atividade5-airflow-webserver
+    command: webserver
+    ports:
+      - "8081:8080"
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-scheduler:
+    <<: *airflow-common
+    container_name: atividade5-airflow-scheduler
+    command: scheduler
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
+volumes:
+  airflow-pgdata:
+
+networks:
+  default:
+  openmetadata_net:
+    external: true
+    name: openmetadata_app_net

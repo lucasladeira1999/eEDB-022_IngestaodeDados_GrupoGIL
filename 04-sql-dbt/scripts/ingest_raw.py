@@ -18,7 +18,8 @@ def get_base_paths() -> tuple[Path, Path, str]:
     data_dir = current_dir / "data"
     raw_dir = data_dir / "raw"
     raw_dir.mkdir(parents=True, exist_ok=True)
-
+    (data_dir / "trusted").mkdir(parents=True, exist_ok=True)
+    (data_dir / "delivery").mkdir(parents=True, exist_ok=True)
     db_path = str(data_dir / "database.duckdb")
     return dados_dir, raw_dir, db_path
 

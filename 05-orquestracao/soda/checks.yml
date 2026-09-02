@@ -1,0 +1,21 @@
+# Aqui o foco é volume, duplicidade e completude dos dados, coisas que so fazem sentido olhando o conjunto de dados inteiro.
+
+checks for delivery.bancos_indicadores:
+  # A camada raw/trusted historicamente traz entre 1400 e 1500 bancos cadastrados
+  - row_count between 1000 and 2000
+
+  # cnpj_norm e a chave de casamento com reclamações e Glassdoor; nao pode duplicar
+  - duplicate_count(cnpj_norm) = 0:
+      filter: cnpj_norm is not null AND cnpj_norm != ''
+
+  # nome é a unica coluna que sempre deveria vir preenchida da origem
+  - missing_percent(nome) = 0%
+
+checks for trusted.tr_reclamacoes:
+  - row_count > 0
+
+checks for trusted.tr_empregados:
+  - row_count > 0
+
+checks for trusted.tr_bancos:
+  - row_count > 0
