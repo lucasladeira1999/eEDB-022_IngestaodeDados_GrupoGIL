@@ -11,9 +11,9 @@ Nenhum arquivo do projeto dbt é duplicado aqui: o Airflow monta `../04-sql-dbt`
 
 ## Por que essas ferramentas
 
-- **Airflow (LocalExecutor)**: mais simples que Celery/K8s para rodar local, e suficiente para uma DAG sequencial.
-- **Soda Core**, não Deequ: `soda-core-duckdb` é uma lib Python que conversa direto com o arquivo `.duckdb`. Deequ exigiria uma JVM com versão do Spark casada, e esta atividade usa a base da Atividade 4 (dbt/DuckDB), sem Spark. Os checks aqui são complementares aos `dbt test`: focam em volume e duplicidade, não em integridade estrutural (isso já é coberto pelos testes do dbt).
-- **OpenMetadata**, não DataHub/Amundsen: tem um workflow de ingestão de dbt pronto (lê `manifest.json`/`catalog.json`/`run_results.json` e monta lineage, descrições e resultado dos testes) sem precisar escrever um conector do zero.
+- **Airflow (LocalExecutor)**: ferramenta conhecida e suficiente para uma DAG sequencial.
+- **Soda Core**, não Dequee ou GX: Esta atividade usa a base da Atividade 4 (dbt/DuckDB), sem Spark. Como `soda-core-duckdb` é uma lib Python que conversa direto com o arquivo `.duckdb`, foi a razão principal pela escolha. Os checks aqui são complementares aos `dbt test`: focam em volume e duplicidade, não em integridade estrutural (isso já é coberto pelos testes do dbt).
+- **OpenMetadata**, não DataHub/Amundsen: tem um workflow de ingestão de dbt pronto sem precisar escrever um conector do zero.
 
 ## Venvs isolados por ferramenta
 
