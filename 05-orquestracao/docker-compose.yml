@@ -16,6 +16,11 @@ x-airflow-common: &airflow-common
     SODA_CONFIG_DIR: /opt/airflow/soda
     OPENMETADATA_CONFIG_DIR: /opt/airflow/openmetadata
     OPENMETADATA_HOST_PORT: http://openmetadata-server:8585/api
+    OPENMETADATA_ADMIN_EMAIL: ${OPENMETADATA_ADMIN_EMAIL:-admin@open-metadata.org}
+    OPENMETADATA_ADMIN_PASSWORD: ${OPENMETADATA_ADMIN_PASSWORD:-admin}
+  networks:
+    - default
+    - openmetadata_net
   volumes:
     - ./dags:/opt/airflow/dags
     - ./soda:/opt/airflow/soda
@@ -78,3 +83,9 @@ services:
 
 volumes:
   airflow-pgdata:
+
+networks:
+  default:
+  openmetadata_net:
+    external: true
+    name: openmetadata_app_net

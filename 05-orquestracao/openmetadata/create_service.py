@@ -5,6 +5,7 @@ from metadata.generated.schema.api.services.createDatabaseService import (
 )
 from metadata.generated.schema.entity.services.connections.database.customDatabaseConnection import (
     CustomDatabaseConnection,
+    CustomDatabaseType,
 )
 from metadata.generated.schema.entity.services.databaseService import (
     DatabaseConnection,
@@ -20,16 +21,18 @@ from metadata.generated.schema.security.client.openMetadataJWTClientConfig impor
 )
 from metadata.ingestion.ometa.ometa_api import OpenMetadata
 
+from om_auth import get_bot_jwt_token
+
 SERVICE_NAME = 'duckdb_atividade4'
 HOST_PORT = os.environ.get('OPENMETADATA_HOST_PORT', 'http://openmetadata-server:8585/api')
-JWT_TOKEN = os.environ.get('OPENMETADATA_JWT_TOKEN', '')
+JWT_TOKEN = get_bot_jwt_token()
 
 
 def main() -> None:
     server_config = OpenMetadataConnection(
         hostPort=HOST_PORT,
         authProvider=AuthProvider.openmetadata,
-        securityConfig=OpenMetadataJWTClientConfig(jwtToken=JWT_TOKEN) if JWT_TOKEN else None,
+        securityConfig=OpenMetadataJWTClientConfig(jwtToken=JWT_TOKEN),
     )
     metadata = OpenMetadata(server_config)
 
@@ -43,6 +46,7 @@ def main() -> None:
         serviceType=DatabaseServiceType.CustomDatabase,
         connection=DatabaseConnection(
             config=CustomDatabaseConnection(
+                type=CustomDatabaseType.CustomDatabase,
                 sourcePythonClass='metadata.ingestion.source.database.customdatabase.source.CustomDatabaseSource',
             )
         ),

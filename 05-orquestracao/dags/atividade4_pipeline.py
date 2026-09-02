@@ -63,7 +63,10 @@ with DAG(
     )
     openmetadata_ingest_dbt = BashOperator(
         task_id='openmetadata_ingest_dbt',
-        bash_command=f"{OPENMETADATA_VENV}/metadata ingest -c {OPENMETADATA_CONFIG_DIR}/ingest_dbt.yaml",
+        bash_command=(
+            f'export OPENMETADATA_JWT_TOKEN="$({OPENMETADATA_VENV}/python {OPENMETADATA_CONFIG_DIR}/om_auth.py)" && '
+            f"{OPENMETADATA_VENV}/metadata ingest -c {OPENMETADATA_CONFIG_DIR}/ingest_dbt.yaml"
+        ),
     )
 
     (
