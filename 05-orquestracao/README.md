@@ -87,6 +87,18 @@ Ou pela UI do OpenMetadata: procure o serviço `duckdb_atividade4` e veja as tab
 
 ## Pontos de atenção conhecidos
 
+- **Permissão de escrita em `../04-sql-dbt` e `./data`**: esses diretórios são criados
+  pelo usuário do host (fora do container), mas as tasks da DAG rodam como o usuário
+  `airflow` (uid `50000`) dentro dos containers. Sem ajuste, escritas no DuckDB
+  (`data/database.duckdb`) e nos parquets gerados pelo dbt (`data/trusted/`,
+  `data/delivery/`) falham com `Permission denied`. Sempre que esses diretórios forem
+  recriados do zero (clone novo, `docker volume prune`, `rm -rf data/` etc.), rode:
+
+  ```bash
+  chmod o+rwX ../04-sql-dbt
+  chmod -R o+rwX ./data
+  ```
+
 - **`requirements-airflow.txt` instalado sem `--constraint`**: `dbt-duckdb`,
   `soda-core-duckdb` e `openmetadata-ingestion` têm pins próprios de `pydantic`/
   `sqlalchemy` que podem conflitar com as constraints do Airflow. Se o build da imagem
