@@ -8,8 +8,8 @@ Atividades da disciplina, uma pasta por semana. Todas partem das mesmas três ba
 | [01](01-etl-visual/) | ETL visual | Apache Hop + Postgres | ✅ feito |
 | [02](02-etl-python/) | ETL com Python | Pandas + AWS S3 + Redshift (Terraform) | ✅ feito |
 | [03](03-etl-pyspark/) | ETL com PySpark | Spark + Python | ✅ feito |
-| [04](04-sql-dbt/) | Transformações SQL | dbt + DuckDB | ⬜ |
-| [05](05-orquestracao/) | Orquestração, qualidade e metadados | Airflow · Great Expectations · DataHub | ⬜ |
+| [04](04-sql-dbt/) | Transformações SQL | dbt + DuckDB | ✅ feito |
+| [05](05-orquestracao/) | Orquestração, qualidade e metadados | Airflow · Great Expectations · DataHub | ✅ feito |
 | [06](06-aws/) | Implementação na cloud | AWS — reimplementa a 02, 03 ou 04 | ⬜ |
 | [07](07-streaming-cloud/) | Pipeline cloud streaming | Lambda + S3 + SQS (local: RabbitMQ + Docker) | ⬜ |
 | [08](08-streaming-kafka/) | Streaming local | Kafka + PySpark Structured Streaming | ⬜ |
