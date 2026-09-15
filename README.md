@@ -10,7 +10,7 @@ Atividades da disciplina, uma pasta por semana. Todas partem das mesmas três ba
 | [03](03-etl-pyspark/) | ETL com PySpark | Spark + Python | ✅ feito |
 | [04](04-sql-dbt/) | Transformações SQL | dbt + DuckDB | ✅ feito |
 | [05](05-orquestracao/) | Orquestração, qualidade e metadados | Airflow · Great Expectations · DataHub | ✅ feito |
-| [06](06-aws/) | Implementação na cloud | AWS — reimplementa a 02, 03 ou 04 | ⬜ |
+| [06](06-aws/) | Implementação na cloud | AWS — reimplementa a 02, 03 ou 04 | ⏭️ pulada | 
 | [07](07-streaming-cloud/) | Pipeline cloud streaming | Lambda + S3 + SQS (local: RabbitMQ + Docker) | ⬜ |
 | [08](08-streaming-kafka/) | Streaming local | Kafka + PySpark Structured Streaming | ⬜ |
 
