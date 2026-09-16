@@ -1,0 +1,13 @@
+dados_path: "dados/"
+raw_bucket: "eedb-022-2026-grupo03-stream-raw"
+trusted_bucket: "eedb-022-2026-grupo03-stream-trusted"
+delivery_bucket: "eedb-022-2026-grupo03-stream-delivery"
+produtor_function_name: "eedb-022-grupo03-produtor"
+db_port: 5432
+db_name: "bancos"
+db_user: "postgres"
+db_password: "Admin1234"
+# Endpoint do RDS criado pelo Terraform: rode `terraform output rds_endpoint` em infra/
+db_host: "eedb-022-grupo03-bancos.<endpoint-atual>.us-east-1.rds.amazonaws.com"
+# opcional: cópia local do CSV consolidado (python src/main.py --consolidar)
+csv_local_path: "reclamacoes_enriquecidas.csv"

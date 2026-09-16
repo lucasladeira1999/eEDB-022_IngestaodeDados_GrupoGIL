@@ -29,3 +29,7 @@ venv/
 04-sql-dbt/dbt_packages/
 04-sql-dbt/logs/
 04-sql-dbt/.user.yml
+
+# ignora os pacotes gerados pelo build.sh
+build/
+07-streaming-cloud/src/config.yaml
