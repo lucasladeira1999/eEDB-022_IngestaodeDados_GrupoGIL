@@ -159,17 +159,6 @@ banco, e a atividade pede que o enriquecimento seja uma consulta SQL.
 
 ## Decisões de infraestrutura
 
-**Buckets criados pelo AWS CLI, não pelo `aws_s3_bucket`.** A service control policy do
-Academy nega `s3:GetBucketObjectLockConfiguration`, e o provider faz essa chamada toda vez
-que lê um bucket — logo depois de criar e em cada refresh. O resultado é que o bucket sobe
-mas o `apply` quebra em seguida com `AccessDenied`, e o mesmo erro volta em todo
-`plan`/`apply`/`destroy` seguinte. O módulo `infra/s3/` então cria os buckets via
-`aws s3api create-bucket` dentro de um `terraform_data`, mantendo a mesma interface (entra
-`bucket_name`, sai `bucket_name`) para o resto do Terraform não precisar saber disso. O
-`provisioner` de destroy faz o papel do antigo `force_destroy`. Não é elegante, mas é o
-preço de rodar num ambiente com policy restritiva — e fixar a versão do provider **não**
-resolve: foi a primeira hipótese testada e o erro é idêntico na 6.58.0 e na 6.64.0.
-
 **Lambda fora da VPC + RDS público.** Lambda dentro de VPC não alcança o S3 sem VPC
 endpoint. Como as duas funções precisam do S3, elas ficam fora da VPC e falam com o RDS pelo
 endpoint público. O security group libera 5432 para `0.0.0.0/0` — aceitável num lab, não em
