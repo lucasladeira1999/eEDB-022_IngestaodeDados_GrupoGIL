@@ -1,0 +1,63 @@
+# Definição de colunas de todas as etapas, num lugar só.
+# Lido por utils.schema("<bloco>", "<chave>") — nenhuma lista de coluna no código.
+
+reclamacoes:
+  # Ordem das colunas no CSV do BACEN. O cabeçalho da origem tem acento e um ";"
+  # sobrando no fim, então renomeamos por POSIÇÃO: o que vale aqui é a ordem.
+  colunas_origem:
+    - ano
+    - trimestre
+    - categoria
+    - tipo
+    - cnpj_if
+    - instituicao_financeira
+    - indice
+    - qtd_reclamacoes_reguladas_procedentes
+    - qtd_reclamacoes_reguladas_outras
+    - qtd_reclamacoes_nao_reguladas
+    - qtd_total_reclamacoes
+    - qtd_total_clientes_ccs_e_scr
+    - qtd_clientes_ccs
+    - qtd_clientes_scr
+
+  # acrescentadas pelo produtor antes de publicar
+  metadados:
+    - origem_arquivo
+
+  # convertidas para inteiro na camada trusted
+  quantidades:
+    - qtd_reclamacoes_reguladas_procedentes
+    - qtd_reclamacoes_reguladas_outras
+    - qtd_reclamacoes_nao_reguladas
+    - qtd_total_reclamacoes
+    - qtd_total_clientes_ccs_e_scr
+    - qtd_clientes_ccs
+    - qtd_clientes_scr
+
+# Tabela consultada pelo enriquecimento, no Postgres.
+# O nome do schema e da tabela ficam no .env, porque mudam por ambiente.
+cadastro:
+  # a ordem vale para o CREATE TABLE e para o COPY: uma lista só evita que o DDL
+  # e a carga saiam de sincronia sem ninguém perceber
+  colunas:
+    - segmento
+    - cnpj
+    - nome
+    - cnpj_norm
+    - nome_norm
+    - nome_resolvido
+
+  # colunas usadas como chave de join, cada uma com seu índice
+  indices:
+    - cnpj_norm
+    - nome_norm
+    - nome_resolvido
+
+  # tudo texto: converter tipo no cadastro comeria o zero à esquerda do CNPJ
+  varchar:
+    segmento: 10
+    cnpj: 20
+    nome: 500
+    cnpj_norm: 20
+    nome_norm: 255
+    nome_resolvido: 255
