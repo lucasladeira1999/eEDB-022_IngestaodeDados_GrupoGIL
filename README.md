@@ -27,5 +27,3 @@ As atividades referenciam a pasta central `dados/` — a base é versionada uma 
 ## Saída comum
 
 Todas as atividades de ETL resolvem o mesmo problema: unir as três bases numa tabela final, uma linha por banco, cruzando segmento, indicadores de reclamação e notas do Glassdoor.
-
-A atividade 03 implementa esse fluxo em três etapas com PySpark: carrega os arquivos na camada `raw` do Postgres, transforma os dados na camada `trusted` e gera a tabela final na camada `delivery`. Os detalhes de execução estão no [README da atividade 03](03-etl-pyspark/).
