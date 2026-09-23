@@ -33,3 +33,5 @@ venv/
 # ignora os pacotes gerados pelo build.sh
 build/
 07-streaming-cloud/src/config.yaml
+
+08-streaming-kafka/data/
